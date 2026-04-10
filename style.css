@@ -1,23 +1,49 @@
+:root {
+    --bg-color: #f0f2f5;
+    --container-bg: #ffffff;
+    --text-color: #333333;
+    --btn-bg: #008CBA;
+    --btn-hover: #005f7a;
+    --number-bg: #4CAF50;
+    --number-text: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode {
+    --bg-color: #121212;
+    --container-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --btn-bg: #00bcd4;
+    --btn-hover: #0097a7;
+    --number-bg: #81c784;
+    --number-text: #121212;
+    --shadow: rgba(0, 0, 0, 0.5);
+}
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f2f5;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
     text-align: center;
-    background-color: white;
+    background-color: var(--container-bg);
     padding: 40px;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px var(--shadow);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    position: relative;
 }
 
 h1 {
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 30px;
 }
 
@@ -31,8 +57,8 @@ h1 {
 .number {
     width: 50px;
     height: 50px;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--number-bg);
+    color: var(--number-text);
     font-size: 24px;
     font-weight: bold;
     border-radius: 50%;
@@ -40,10 +66,11 @@ h1 {
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.5s ease-in-out;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 #generate-btn {
-    background-color: #008CBA;
+    background-color: var(--btn-bg);
     color: white;
     padding: 15px 30px;
     font-size: 18px;
@@ -54,7 +81,26 @@ h1 {
 }
 
 #generate-btn:hover {
-    background-color: #005f7a;
+    background-color: var(--btn-hover);
+}
+
+#theme-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+#theme-toggle:hover {
+    background-color: var(--text-color);
+    color: var(--container-bg);
 }
 
 @keyframes fadeIn {
