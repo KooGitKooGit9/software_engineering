@@ -97,6 +97,26 @@ const db = [
 ];
 
 let currentCat = "", currentLevel = "", currentList = [], wrongList = [], idx = 0, countC = 0, countW = 0;
+let currentView = 'home-view';
+const viewHistory = [];
+
+function setActiveView(viewId, options = {}) {
+    const { pushHistory = true } = options;
+
+    if (pushHistory && currentView !== viewId) {
+        viewHistory.push(currentView);
+    }
+
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+    currentView = viewId;
+    updateBackButton();
+}
+
+function updateBackButton() {
+    const backButton = document.getElementById('back-button');
+    backButton.classList.toggle('visible', viewHistory.length > 0);
+}
 
 function handleHeaderClick(e) {
     goHome();
@@ -111,15 +131,23 @@ function shuffle(array) {
 }
 
 function goHome() { 
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('home-view').classList.add('active');
+    viewHistory.length = 0;
+    setActiveView('home-view', { pushHistory: false });
+}
+
+function goBack() {
+    if (viewHistory.length === 0) {
+        return;
+    }
+
+    const previousView = viewHistory.pop();
+    setActiveView(previousView, { pushHistory: false });
 }
 
 function chooseLevel(cat) {
     currentCat = cat;
     document.getElementById('selected-cat-name').innerText = cat.replace(/^\d+\.\s*/, '');
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('level-view').classList.add('active');
+    setActiveView('level-view');
 }
 
 function startStudy(lv) {
@@ -132,8 +160,7 @@ function startStudy(lv) {
     idx = 0; countC = 0; countW = 0; wrongList = [];
     updateStats();
     showWord();
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('study-view').classList.add('active');
+    setActiveView('study-view');
 }
 
 function showWord() {
@@ -152,12 +179,14 @@ function answer(isC) {
     if(isC) {
         countC++;
         triggerFeedback('success');
+        updateStats('correct');
     } else {
         countW++;
         wrongList.push(currentList[idx]);
         triggerFeedback('danger');
+        updateStats('wrong');
     }
-    updateStats();
+    
     setTimeout(() => {
         idx++; showWord();
     }, 300);
@@ -165,21 +194,44 @@ function answer(isC) {
 
 function triggerFeedback(type) {
     const container = document.querySelector('.container');
-    const color = type === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
-    container.style.backgroundColor = color;
+    // 배경을 바꾸는 대신 그림자(box-shadow)에 색상을 넣어 깜빡임을 방지합니다.
+    const color = type === 'success' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)';
+    const originalShadow = "var(--shadow-lg)";
+    
+    container.style.boxShadow = `0 0 40px ${color}, ${originalShadow}`;
+    container.style.transition = "box-shadow 0.3s ease";
+    
     setTimeout(() => {
-        container.style.backgroundColor = 'var(--glass)';
+        container.style.boxShadow = "";
     }, 300);
 }
 
-function updateStats() {
+function updateStats(type) {
     document.getElementById('s-correct').innerText = countC;
     document.getElementById('s-wrong').innerText = countW;
+
+    if (type) {
+        const targetId = type === 'correct' ? 's-correct' : 's-wrong';
+        const parentPill = document.getElementById(targetId).parentElement;
+        const emoji = document.createElement('span');
+        emoji.className = 'stat-emoji';
+        emoji.innerText = type === 'correct' ? '😊' : '😢';
+        
+        // 랜덤 위치 약간 추가
+        const randomX = Math.floor(Math.random() * 20) - 10;
+        emoji.style.left = `calc(50% + ${randomX}px)`;
+        emoji.style.top = '0';
+
+        parentPill.appendChild(emoji);
+        
+        setTimeout(() => {
+            emoji.remove();
+        }, 800);
+    }
 }
 
 function showResult() {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('result-view').classList.add('active');
+    setActiveView('result-view', { pushHistory: false });
     const score = Math.round((countC / currentList.length) * 100);
     document.getElementById('result-score').innerText = score + "%";
     document.getElementById('result-text').innerText = `총 ${currentList.length}개 단어 중 ${countC}개를 맞히셨어요!`;
@@ -191,8 +243,7 @@ function retryWrong() {
     idx = 0; countC = 0; countW = 0; wrongList = [];
     updateStats();
     showWord();
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('study-view').classList.add('active');
+    setActiveView('study-view');
 }
 
 function speak(e, id) {
@@ -202,3 +253,5 @@ function speak(e, id) {
     ut.lang = 'en-US';
     window.speechSynthesis.speak(ut);
 }
+
+updateBackButton();

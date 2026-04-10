@@ -7,78 +7,159 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="container">
+        <button id="back-button" class="back-btn" type="button" onclick="goBack()" aria-label="뒤로가기">뒤로가기</button>
+
         <div class="header-area" onclick="handleHeaderClick(event)">
-            <span class="logo-emoji">👆</span>
-            <h1 class="main-title">딸깍보카</h1>
+            <div class="brand-mark">👆</div>
+            <div class="brand-copy">
+                <p class="brand-kicker">Smart Vocabulary Studio</p>
+                <h1 class="main-title">딸깍보카</h1>
+                <p class="brand-subtitle">카테고리를 고르고, 난이도를 정한 뒤, 플래시카드로 빠르게 반복 학습하세요.</p>
+            </div>
         </div>
 
         <div id="home-view" class="view active">
-            <p style="color: #6b7280; font-weight: 600; margin-bottom: 25px; font-size: 0.95rem;">공부하실 카테고리를 선택해 주세요!</p>
+            <div class="section-head">
+                <p class="section-kicker">Category Select</p>
+                <h2 class="section-title">공부할 영역을 선택하세요</h2>
+                <p class="section-description">시험, 회화, 여행, 연애, 비즈니스, 토익까지 바로 시작할 수 있게 정리해 두었습니다.</p>
+            </div>
             <div class="grid-layout">
-                <button class="btn-select" onclick="chooseLevel('1. 수능 영단어')"><span>📚</span>수능 영단어</button>
-                <button class="btn-select" onclick="chooseLevel('2. 일상 회화')"><span>💬</span>일상 회화</button>
-                <button class="btn-select" onclick="chooseLevel('3. 여행 필수')"><span>✈️</span>여행 필수</button>
-                <button class="btn-select" onclick="chooseLevel('4. 설레는 연애')"><span>❤️</span>설레는 연애</button>
-                <button class="btn-select" onclick="chooseLevel('5. 비즈니스')"><span>💼</span>비즈니스</button>
-                <button class="btn-select" onclick="chooseLevel('6. 토익 기출')"><span>📝</span>토익 기출</button>
+                <button class="btn-select" onclick="chooseLevel('1. 수능 영단어')">
+                    <span class="select-emoji">📚</span>
+                    <span class="select-title">수능 영단어</span>
+                    <span class="select-meta">내신 · 모의고사</span>
+                </button>
+                <button class="btn-select" onclick="chooseLevel('2. 일상 회화')">
+                    <span class="select-emoji">💬</span>
+                    <span class="select-title">일상 회화</span>
+                    <span class="select-meta">실전 표현</span>
+                </button>
+                <button class="btn-select" onclick="chooseLevel('3. 여행 필수')">
+                    <span class="select-emoji">✈️</span>
+                    <span class="select-title">여행 필수</span>
+                    <span class="select-meta">공항 · 호텔 · 이동</span>
+                </button>
+                <button class="btn-select" onclick="chooseLevel('4. 설레는 연애')">
+                    <span class="select-emoji">❤️</span>
+                    <span class="select-title">설레는 연애</span>
+                    <span class="select-meta">감정 · 관계 표현</span>
+                </button>
+                <button class="btn-select" onclick="chooseLevel('5. 비즈니스')">
+                    <span class="select-emoji">💼</span>
+                    <span class="select-title">비즈니스</span>
+                    <span class="select-meta">회의 · 보고 · 협업</span>
+                </button>
+                <button class="btn-select" onclick="chooseLevel('6. 토익 기출')">
+                    <span class="select-emoji">📝</span>
+                    <span class="select-title">토익 기출</span>
+                    <span class="select-meta">빈출 어휘 압축</span>
+                </button>
             </div>
         </div>
 
         <div id="level-view" class="view">
-            <button class="nav-btn" onclick="goHome()">🏠 홈으로</button>
-            <p id="selected-cat-name" style="font-weight: 800; font-size: 1.5rem; color: #111827; margin: 10px 0 20px 0;"></p>
+            <div class="section-head compact">
+                <p class="section-kicker">Difficulty Select</p>
+                <p id="selected-cat-name" class="selected-category"></p>
+                <p class="section-description">현재 수준에 맞게 시작하거나 전체를 한 번에 돌려볼 수 있습니다.</p>
+            </div>
             <div class="level-column">
-                <button class="btn-bar" style="border-left: 6px solid #ef4444;" onclick="startStudy('상')">🔥 난이도 : 상</button>
-                <button class="btn-bar" style="border-left: 6px solid #f59e0b;" onclick="startStudy('중')">⚖️ 난이도 : 중</button>
-                <button class="btn-bar" style="border-left: 6px solid #10b981;" onclick="startStudy('하')">🌱 난이도 : 하</button>
-                <button class="btn-bar" style="background: #f3f4f6;" onclick="startStudy('전체')">🌍 모든 난이도 전체 보기</button>
+                <button class="btn-bar level-high" onclick="startStudy('상')">
+                    <span class="level-badge">상</span>
+                    <span class="level-copy">
+                        <strong>난이도 상</strong>
+                        <small>도전적인 단어와 표현부터 학습</small>
+                    </span>
+                </button>
+                <button class="btn-bar level-mid" onclick="startStudy('중')">
+                    <span class="level-badge">중</span>
+                    <span class="level-copy">
+                        <strong>난이도 중</strong>
+                        <small>가장 균형 잡힌 기본 코스</small>
+                    </span>
+                </button>
+                <button class="btn-bar level-low" onclick="startStudy('하')">
+                    <span class="level-badge">하</span>
+                    <span class="level-copy">
+                        <strong>난이도 하</strong>
+                        <small>가볍게 익히는 핵심 단어 위주</small>
+                    </span>
+                </button>
+                <button class="btn-bar level-all" onclick="startStudy('전체')">
+                    <span class="level-badge">ALL</span>
+                    <span class="level-copy">
+                        <strong>전체 보기</strong>
+                        <small>모든 난이도를 섞어서 한 번에 복습</small>
+                    </span>
+                </button>
             </div>
         </div>
 
-        <div id="study-view" class="view">
-            <button class="nav-btn" onclick="goHome()">🏠 홈으로</button>
-            <div class="card" id="flashcard" onclick="this.classList.toggle('flipped')">
-                <div class="card-inner">
-                    <div class="card-front">
-                        <div class="word-text" id="q-word">Word</div>
-                        <div style="font-size:0.85rem; color:#9ca3af; margin-top:40px; font-weight: 500;">카드를 터치하면 뒤집혀요!</div>
-                    </div>
-                    <div class="card-back">
-                        <div style="display:flex; align-items:center; justify-content: center; margin-bottom: 10px;">
-                            <span id="a-word" style="font-size: 2.2rem; font-weight: 900; color: #111827;"></span>
-                            <div class="tts-icon" onclick="speak(event, 'a-word')">🔊</div>
-                        </div>
-                        <div id="a-pron" style="color:#6b7280; margin-bottom:15px; font-size: 1.1rem; font-weight: 600;"></div>
-                        <div class="meaning-text" id="a-meaning"></div>
-                        <div style="margin-top:20px; font-size:0.95rem; line-height:1.5; color: #4b5563; background: #ffffff; padding: 15px; border-radius: 20px; width: 100%; border: 1px solid #f3f4f6;">
-                            <div style="margin-bottom: 8px; font-style:italic; display: flex; align-items: center; justify-content: center;">
-                                <span id="a-ex"></span> 
-                                <span onclick="speak(event, 'a-ex')" style="cursor:pointer; margin-left:8px; font-size: 0.9rem;">🔊</span>
+        <div id="study-view" class="view study-view">
+            <div class="study-layout">
+                <div class="study-card-panel">
+
+                    <div class="card" id="flashcard" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="word-text" id="q-word">Word</div>
+                                <div class="card-hint">카드를 터치하면 뜻과 예문이 펼쳐집니다</div>
                             </div>
-                            <div id="a-ex-kor" style="color: #6b7280; font-weight: 700;"></div>
+                            <div class="card-back">
+                                <div class="answer-head">
+                                    <span id="a-word" class="answer-word"></span>
+                                    <button class="tts-icon" type="button" onclick="speak(event, 'a-word')">🔊</button>
+                                </div>
+                                <div id="a-pron" class="pron-text"></div>
+                                <div id="a-meaning" class="meaning-text"></div>
+                                <div class="example-box">
+                                    <div class="example-line">
+                                        <span id="a-ex"></span>
+                                        <button class="example-audio" type="button" onclick="speak(event, 'a-ex')">🔊</button>
+                                    </div>
+                                    <div id="a-ex-kor" class="example-translation"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="action-group">
-                <button class="btn-wrong" onclick="answer(false)">❌ 틀렸어요</button>
-                <button class="btn-correct" onclick="answer(true)">✅ 맞았어요</button>
-            </div>
-            <div class="stats-bar">
-                <span style="color:#ef4444">틀림 <span id="s-wrong">0</span></span>
-                <span style="color:#10b981">맞음 <span id="s-correct">0</span></span>
+
+                <div class="study-side-panel">
+                    <div class="study-side-copy">
+                        <p class="section-kicker">Study Flow</p>
+                        <h2 class="section-title">카드를 보고 바로 체크하세요</h2>
+                        <p class="section-description">단어를 먼저 떠올리고, 카드를 뒤집은 뒤 정답 여부를 즉시 기록하면 반복 학습이 훨씬 빨라집니다.</p>
+                    </div>
+
+                    <div class="action-group">
+                        <button class="btn-wrong" onclick="answer(false)">❌ 틀렸어요</button>
+                        <button class="btn-correct" onclick="answer(true)">✅ 맞았어요</button>
+                    </div>
+
+                    <div class="stats-bar">
+                        <span class="stat-pill stat-wrong">틀림 <strong id="s-wrong">0</strong></span>
+                        <span class="stat-pill stat-correct">맞음 <strong id="s-correct">0</strong></span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="result-view" class="view">
-            <h2 style="font-size: 1.8rem; font-weight: 800; color: #111827;">학습 완료! 🎉</h2>
-            <div style="font-size: 5rem; font-weight: 900; margin: 20px 0;" id="result-score">0%</div>
-            <p id="result-text" style="font-size: 1.1rem; margin-bottom: 30px; color: #4b5563; font-weight: 600;"></p>
-            
-            <button class="btn-bar" style="background: var(--danger); color: white; border: none; margin-bottom: 12px; padding: 20px;" id="retry-wrong-btn" onclick="retryWrong()">🔥 틀린 단어 복습하기</button>
-            <button class="btn-bar" style="background: #4b5563; color: white; border: none; padding: 20px;" onclick="goHome()">🏠 홈으로 돌아가기</button>
+        <div id="result-view" class="view result-view">
+            <div class="result-layout">
+                <div class="result-copy-panel">
+                    <div class="section-head compact">
+                        <p class="section-kicker">Session Complete</p>
+                        <h2 class="result-title">학습 완료</h2>
+                        <p id="result-text" class="result-text"></p>
+                    </div>
+                    <button class="btn-bar retry-btn" id="retry-wrong-btn" onclick="retryWrong()">🔥 틀린 단어만 다시 복습하기</button>
+                </div>
+                <div class="result-score-wrap">
+                    <div id="result-score">0%</div>
+                </div>
+            </div>
         </div>
     </div>
 
