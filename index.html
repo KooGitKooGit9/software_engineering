@@ -1,27 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Lotto Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>딸깍보카 👆 - 스마트 영단어 학습</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="background-animate"></div>
+
     <div class="container">
-        <button id="theme-toggle" class="glass-btn">🌙 Dark Mode</button>
-        <header>
-            <h1>Lotto <span>Generator</span></h1>
-            <p>Your lucky numbers are just a click away</p>
-        </header>
-        <div id="numbers-container" class="numbers-container">
-            <!-- Numbers will be injected here -->
+        <div class="header-area" onclick="handleHeaderClick(event)">
+            <span class="logo-emoji">👆</span>
+            <h1 class="main-title">딸깍보카</h1>
         </div>
-        <div class="actions">
-            <button id="generate-btn" class="main-btn">Generate Lucky Numbers</button>
+
+        <div id="home-view" class="view active">
+            <p style="color: #6b7280; font-weight: 600; margin-bottom: 25px; font-size: 0.95rem;">공부하실 카테고리를 선택해 주세요!</p>
+            <div class="grid-layout">
+                <button class="btn-select" onclick="chooseLevel('1. 수능 영단어')"><span>📚</span>수능 영단어</button>
+                <button class="btn-select" onclick="chooseLevel('2. 일상 회화')"><span>💬</span>일상 회화</button>
+                <button class="btn-select" onclick="chooseLevel('3. 여행 필수')"><span>✈️</span>여행 필수</button>
+                <button class="btn-select" onclick="chooseLevel('4. 설레는 연애')"><span>❤️</span>설레는 연애</button>
+                <button class="btn-select" onclick="chooseLevel('5. 비즈니스')"><span>💼</span>비즈니스</button>
+                <button class="btn-select" onclick="chooseLevel('6. 토익 기출')"><span>📝</span>토익 기출</button>
+            </div>
+        </div>
+
+        <div id="level-view" class="view">
+            <button class="nav-btn" onclick="goHome()">🏠 홈으로</button>
+            <p id="selected-cat-name" style="font-weight: 800; font-size: 1.5rem; color: #111827; margin: 10px 0 20px 0;"></p>
+            <div class="level-column">
+                <button class="btn-bar" style="border-left: 6px solid #ef4444;" onclick="startStudy('상')">🔥 난이도 : 상</button>
+                <button class="btn-bar" style="border-left: 6px solid #f59e0b;" onclick="startStudy('중')">⚖️ 난이도 : 중</button>
+                <button class="btn-bar" style="border-left: 6px solid #10b981;" onclick="startStudy('하')">🌱 난이도 : 하</button>
+                <button class="btn-bar" style="background: #f3f4f6;" onclick="startStudy('전체')">🌍 모든 난이도 전체 보기</button>
+            </div>
+        </div>
+
+        <div id="study-view" class="view">
+            <button class="nav-btn" onclick="goHome()">🏠 홈으로</button>
+            <div class="card" id="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="word-text" id="q-word">Word</div>
+                        <div style="font-size:0.85rem; color:#9ca3af; margin-top:40px; font-weight: 500;">카드를 터치하면 뒤집혀요!</div>
+                    </div>
+                    <div class="card-back">
+                        <div style="display:flex; align-items:center; justify-content: center; margin-bottom: 10px;">
+                            <span id="a-word" style="font-size: 2.2rem; font-weight: 900; color: #111827;"></span>
+                            <div class="tts-icon" onclick="speak(event, 'a-word')">🔊</div>
+                        </div>
+                        <div id="a-pron" style="color:#6b7280; margin-bottom:15px; font-size: 1.1rem; font-weight: 600;"></div>
+                        <div class="meaning-text" id="a-meaning"></div>
+                        <div style="margin-top:20px; font-size:0.95rem; line-height:1.5; color: #4b5563; background: #ffffff; padding: 15px; border-radius: 20px; width: 100%; border: 1px solid #f3f4f6;">
+                            <div style="margin-bottom: 8px; font-style:italic; display: flex; align-items: center; justify-content: center;">
+                                <span id="a-ex"></span> 
+                                <span onclick="speak(event, 'a-ex')" style="cursor:pointer; margin-left:8px; font-size: 0.9rem;">🔊</span>
+                            </div>
+                            <div id="a-ex-kor" style="color: #6b7280; font-weight: 700;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="action-group">
+                <button class="btn-wrong" onclick="answer(false)">❌ 틀렸어요</button>
+                <button class="btn-correct" onclick="answer(true)">✅ 맞았어요</button>
+            </div>
+            <div class="stats-bar">
+                <span style="color:#ef4444">틀림 <span id="s-wrong">0</span></span>
+                <span style="color:#10b981">맞음 <span id="s-correct">0</span></span>
+            </div>
+        </div>
+
+        <div id="result-view" class="view">
+            <h2 style="font-size: 1.8rem; font-weight: 800; color: #111827;">학습 완료! 🎉</h2>
+            <div style="font-size: 5rem; font-weight: 900; margin: 20px 0;" id="result-score">0%</div>
+            <p id="result-text" style="font-size: 1.1rem; margin-bottom: 30px; color: #4b5563; font-weight: 600;"></p>
+            
+            <button class="btn-bar" style="background: var(--danger); color: white; border: none; margin-bottom: 12px; padding: 20px;" id="retry-wrong-btn" onclick="retryWrong()">🔥 틀린 단어 복습하기</button>
+            <button class="btn-bar" style="background: #4b5563; color: white; border: none; padding: 20px;" onclick="goHome()">🏠 홈으로 돌아가기</button>
         </div>
     </div>
+
     <script src="main.js"></script>
 </body>
 </html>
