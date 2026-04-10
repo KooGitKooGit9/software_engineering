@@ -9,35 +9,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const numbersContainer = document.getElementById('numbers-container');
     const themeToggle = document.getElementById('theme-toggle');
 
-    if (!themeToggle) {
-        console.error('Theme toggle button not found!');
-        return;
-    }
+    if (!themeToggle) return;
 
-    // Set initial button text
-    if (document.body.classList.contains('dark-mode')) {
-        themeToggle.textContent = 'Light Mode';
-    } else {
-        themeToggle.textContent = 'Dark Mode';
-    }
+    // Set initial button text/icon
+    const updateThemeBtn = () => {
+        if (document.body.classList.contains('dark-mode')) {
+            themeToggle.innerHTML = '☀️ Light Mode';
+        } else {
+            themeToggle.innerHTML = '🌙 Dark Mode';
+        }
+    };
+    updateThemeBtn();
 
     themeToggle.addEventListener('click', () => {
-        console.log('Button clicked!');
         document.body.classList.toggle('dark-mode');
-        
-        let theme = 'light';
-        if (document.body.classList.contains('dark-mode')) {
-            theme = 'dark';
-            themeToggle.textContent = 'Light Mode';
-        } else {
-            themeToggle.textContent = 'Dark Mode';
-        }
-        
-        localStorage.setItem('theme', theme);
-        console.log('Theme changed to:', theme);
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateThemeBtn();
     });
 
     // Lotto Logic
+    function getBallClass(num) {
+        if (num <= 10) return 'n-1-10';
+        if (num <= 20) return 'n-11-20';
+        if (num <= 30) return 'n-21-30';
+        if (num <= 40) return 'n-31-40';
+        return 'n-41-45';
+    }
+
     function generateNumbers() {
         const numbers = new Set();
         while (numbers.size < 6) {
@@ -49,12 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayNumbers(numbers) {
         numbersContainer.innerHTML = '';
-        for (const number of numbers) {
+        numbers.forEach((number, index) => {
             const numberDiv = document.createElement('div');
-            numberDiv.classList.add('number');
+            numberDiv.classList.add('number', getBallClass(number));
             numberDiv.textContent = number;
+            // Add staggered delay for animation
+            numberDiv.style.animationDelay = `${index * 0.1}s`;
             numbersContainer.appendChild(numberDiv);
-        }
+        });
     }
 
     function generateAndDisplayNumbers() {
@@ -63,7 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (generateBtn) {
-        generateBtn.addEventListener('click', generateAndDisplayNumbers);
+        generateBtn.addEventListener('click', () => {
+            // Re-trigger animation
+            numbersContainer.innerHTML = '';
+            setTimeout(generateAndDisplayNumbers, 50);
+        });
     }
 
     // Initial generation

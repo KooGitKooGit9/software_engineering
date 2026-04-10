@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Number Generator</title>
+    <title>Premium Lotto Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="background-animate"></div>
     <div class="container">
-        <button id="theme-toggle">Dark Mode</button>
-        <h1>Lotto Number Generator</h1>
-        <div id="numbers-container" class="numbers-container"></div>
-        <button id="generate-btn">Generate Numbers</button>
+        <button id="theme-toggle" class="glass-btn">🌙 Dark Mode</button>
+        <header>
+            <h1>Lotto <span>Generator</span></h1>
+            <p>Your lucky numbers are just a click away</p>
+        </header>
+        <div id="numbers-container" class="numbers-container">
+            <!-- Numbers will be injected here -->
+        </div>
+        <div class="actions">
+            <button id="generate-btn" class="main-btn">Generate Lucky Numbers</button>
+        </div>
     </div>
     <script src="main.js"></script>
 </body>
