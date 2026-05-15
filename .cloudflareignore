@@ -1,0 +1,17 @@
+node_modules/
+.env
+.git/
+.gitignore
+.cloudflareignore
+npm-debug.log
+.wrangler/
+.idx/
+.vscode/
+package-lock.json
+package.json
+server.js
+import-words.js
+main.js
+main-v2.js
+wrangler.jsonc
+wrangler.toml
