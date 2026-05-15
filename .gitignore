@@ -1,0 +1,6 @@
+node_modules
+.env
+.wrangler
+.idx
+.vscode
+package-lock.json
