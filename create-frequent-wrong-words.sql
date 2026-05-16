@@ -58,3 +58,33 @@ on conflict (word) do update set
   category = excluded.category,
   level = excluded.level,
   wrong_count = excluded.wrong_count;
+
+create or replace function sync_frequent_wrong_word()
+returns trigger as $$
+declare
+  current_wrong_count integer;
+begin
+  select count(*)::integer
+  into current_wrong_count
+  from wrong_history
+  where word = new.word;
+
+  if current_wrong_count >= 3 then
+    insert into frequent_wrong_words (word, category, level, wrong_count)
+    values (new.word, new.category, new.level, current_wrong_count)
+    on conflict (word) do update set
+      category = excluded.category,
+      level = excluded.level,
+      wrong_count = excluded.wrong_count;
+  end if;
+
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists wrong_history_sync_frequent_wrong_word on wrong_history;
+
+create trigger wrong_history_sync_frequent_wrong_word
+after insert on wrong_history
+for each row
+execute function sync_frequent_wrong_word();
