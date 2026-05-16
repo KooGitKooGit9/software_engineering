@@ -137,11 +137,52 @@ async function saveToDB(data) {
             alert('DB 저장 실패: ' + error.message);
         } else {
             console.log(`Saved to ${table}: ${data.word}`);
+            if (!data.is_correct) await saveFrequentWrongWord(data);
         }
     } catch (err) {
         console.error('Network/Runtime error during save:', err);
         alert('네트워크 오류로 저장이 되지 않았습니다.');
     }
+}
+
+async function saveFrequentWrongWord(data) {
+    const { count, error: countError } = await _supabase
+        .from('wrong_history')
+        .select('*', { count: 'exact', head: true })
+        .eq('word', data.word);
+
+    if (countError) {
+        console.error('Failed to count wrong word:', countError);
+        return;
+    }
+
+    if ((count || 0) < 3) return;
+
+    const frequentWrongWord = {
+        word: data.word,
+        category: data.category,
+        level: data.level,
+        wrong_count: count
+    };
+
+    const { data: existingRows, error: selectError } = await _supabase
+        .from('frequent_wrong_words')
+        .select('id')
+        .eq('word', data.word)
+        .limit(1);
+
+    if (selectError) {
+        console.error('Failed to check frequent wrong word:', selectError);
+        return;
+    }
+
+    const existingId = existingRows && existingRows[0] && existingRows[0].id;
+    const request = existingId
+        ? _supabase.from('frequent_wrong_words').update(frequentWrongWord).eq('id', existingId)
+        : _supabase.from('frequent_wrong_words').insert([frequentWrongWord]);
+
+    const { error } = await request;
+    if (error) console.error('Failed to save frequent wrong word:', error);
 }
 
 function triggerFeedback(type) {
