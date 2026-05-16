@@ -19,6 +19,45 @@ let db = [];
 let currentCat = '', currentLevel = '', currentList = [], wrongList = [], idx = 0, countC = 0, countW = 0;
 let currentView = 'home-view';
 const viewHistory = [];
+const KONGLISH_CATEGORY = '2. 일상 회화';
+const KONGLISH_WORDS = [
+    {
+        cat: KONGLISH_CATEGORY,
+        level: '상',
+        word: 'One piece',
+        mean: '콩글리쉬: 원피스는 영어로 dress라고 해요.',
+        pron: '원 피스',
+        ex: 'She wore a dress to the party.',
+        exKor: '그녀는 파티에 원피스를 입고 갔어요.',
+        isKonglish: true,
+        konglishCorrect: 'dress',
+        konglishMessage: '한국식으로는 익숙하지만 영어권에서는 one-piece보다 dress가 자연스러워요.'
+    },
+    {
+        cat: KONGLISH_CATEGORY,
+        level: '중',
+        word: 'Hand phone',
+        mean: '콩글리쉬: 휴대폰은 영어로 cell phone 또는 mobile phone이에요.',
+        pron: '핸드 폰',
+        ex: 'My cell phone battery is low.',
+        exKor: '내 휴대폰 배터리가 부족해요.',
+        isKonglish: true,
+        konglishCorrect: 'cell phone',
+        konglishMessage: 'hand phone이라고 하면 의미는 짐작할 수 있어도 실제 표현은 cell phone이 자연스러워요.'
+    },
+    {
+        cat: KONGLISH_CATEGORY,
+        level: '하',
+        word: 'Fighting',
+        mean: '콩글리쉬: 응원할 때는 You can do it! 또는 Good luck!이라고 해요.',
+        pron: '파이팅',
+        ex: 'You can do it!',
+        exKor: '넌 할 수 있어!',
+        isKonglish: true,
+        konglishCorrect: 'You can do it!',
+        konglishMessage: 'fighting은 영어권에서 응원 구호로 잘 쓰이지 않아요.'
+    }
+];
 
 function setActiveView(viewId, options = {}) {
     const { pushHistory = true } = options;
@@ -41,6 +80,16 @@ function shuffle(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+function getKonglishWordsFor(level, masteredSet, existingWords) {
+    if (currentCat !== KONGLISH_CATEGORY) return [];
+    const existingSet = new Set(existingWords.map(item => item.word.toLowerCase()));
+    return KONGLISH_WORDS
+        .filter(item => (level === '전체' || item.level === level))
+        .filter(item => !masteredSet.has(item.word))
+        .filter(item => !existingSet.has(item.word.toLowerCase()))
+        .map(item => ({ ...item }));
 }
 function goHome() { viewHistory.length = 0; setActiveView('home-view', { pushHistory: false }); }
 function goBack() {
@@ -77,16 +126,18 @@ async function startStudy(lv) {
 
         // 3. Filter
         const filtered = allWords.filter(w => !masteredSet.has(w.word));
-        if (filtered.length === 0) {
+        const regularWords = filtered.map(w => ({
+            cat: w.category, level: w.level, word: w.word, mean: w.meaning,
+            pron: w.pronunciation, ex: w.example, exKor: w.example_kor
+        }));
+        const konglishWords = getKonglishWordsFor(lv, masteredSet, regularWords);
+        if (regularWords.length + konglishWords.length === 0) {
             alert('학습할 수 있는 새로운 단어가 없습니다! (이미 모두 맞혔거나 이 카테고리에 단어가 없습니다)');
             document.body.style.cursor = 'default';
             return;
         }
 
-        currentList = shuffle(filtered.map(w => ({
-            cat: w.category, level: w.level, word: w.word, mean: w.meaning,
-            pron: w.pronunciation, ex: w.example, exKor: w.example_kor
-        })));
+        currentList = shuffle([...regularWords, ...konglishWords]);
 
         idx = 0; countC = 0; countW = 0; wrongList = [];
         updateStats();
@@ -174,11 +225,41 @@ function showWord() {
     document.getElementById('a-ex').innerText = cur.ex;
     document.getElementById('a-ex-kor').innerText = cur.exKor;
     document.getElementById('flashcard').classList.remove('flipped');
+    document.getElementById('flashcard').classList.toggle('konglish-card', !!cur.isKonglish);
+    hideKonglishEvent();
+}
+
+function handleCardFlip() {
+    const card = document.getElementById('flashcard');
+    const isOpening = !card.classList.contains('flipped');
+    card.classList.toggle('flipped');
+    if (isOpening) triggerKonglishEvent();
+}
+
+function triggerKonglishEvent() {
+    const cur = currentList[idx];
+    if (!cur || !cur.isKonglish || cur.konglishRevealed) return;
+    cur.konglishRevealed = true;
+
+    const event = document.getElementById('konglish-event');
+    document.getElementById('konglish-correct').innerText = cur.konglishCorrect;
+    document.getElementById('konglish-message').innerText = cur.konglishMessage;
+    event.classList.remove('show');
+    void event.offsetWidth;
+    event.classList.add('show');
+    setTimeout(() => event.classList.remove('show'), 3600);
+}
+
+function hideKonglishEvent() {
+    const event = document.getElementById('konglish-event');
+    if (event) event.classList.remove('show');
 }
 
 function answer(isC) {
     const cur = currentList[idx];
-    saveToDB({ word: cur.word, is_correct: isC, category: currentCat, level: currentLevel });
+    if (!cur.isKonglish) {
+        saveToDB({ word: cur.word, is_correct: isC, category: cur.cat || currentCat, level: cur.level || currentLevel });
+    }
     if(isC) {
         countC++; triggerFeedback('success'); updateStats('correct');
     } else {

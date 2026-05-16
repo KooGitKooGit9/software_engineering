@@ -108,7 +108,7 @@
             <div class="study-layout">
                 <div class="study-card-panel">
 
-                    <div class="card" id="flashcard" onclick="this.classList.toggle('flipped')">
+                    <div class="card" id="flashcard" onclick="handleCardFlip()">
                         <div class="card-inner">
                             <div class="card-front">
                                 <div class="word-text" id="q-word">Word</div>
@@ -130,6 +130,12 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="konglish-event" id="konglish-event" aria-live="polite">
+                        <div class="konglish-burst">Konglish!</div>
+                        <div class="konglish-title">사실 이 단어는 콩글리쉬입니다!</div>
+                        <div class="konglish-correct">진짜 표현: <strong id="konglish-correct"></strong></div>
+                        <div class="konglish-message" id="konglish-message"></div>
                     </div>
                 </div>
 

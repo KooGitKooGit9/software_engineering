@@ -422,6 +422,10 @@ button {
     align-items: center;
 }
 
+.study-card-panel {
+    position: relative;
+}
+
 .study-side-panel {
     display: flex;
     flex-direction: column;
@@ -465,6 +469,107 @@ button {
 .card-back {
     transform: rotateY(180deg);
     background: linear-gradient(160deg, #ffffff 0%, #ecfff0 70%, #dcfce7 100%);
+}
+
+.card.konglish-card .card-front,
+.card.konglish-card .card-back {
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 22px 48px rgba(217, 119, 6, 0.24);
+}
+
+.card.konglish-card .card-front {
+    background: linear-gradient(160deg, #ffffff 0%, #fff7ed 58%, #fef3c7 100%);
+}
+
+.konglish-event {
+    position: absolute;
+    left: 50%;
+    top: 18px;
+    z-index: 10;
+    width: min(360px, calc(100% - 28px));
+    padding: 16px 18px;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 2px solid rgba(245, 158, 11, 0.9);
+    box-shadow: 0 24px 44px rgba(120, 53, 15, 0.24);
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -14px) scale(0.92);
+}
+
+.konglish-event.show {
+    animation: konglishPop 3.6s ease both;
+}
+
+.konglish-event::before,
+.konglish-event::after {
+    content: "";
+    position: absolute;
+    top: -12px;
+    width: 54px;
+    height: 12px;
+    border-radius: 999px;
+    background: repeating-linear-gradient(90deg, #f97316 0 10px, #22c55e 10px 20px, #0ea5e9 20px 30px);
+}
+
+.konglish-event::before {
+    left: 24px;
+    transform: rotate(-18deg);
+}
+
+.konglish-event::after {
+    right: 24px;
+    transform: rotate(18deg);
+}
+
+.konglish-burst {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.konglish-title {
+    margin-top: 8px;
+    color: #9a3412;
+    font-size: 1.15rem;
+    font-weight: 900;
+}
+
+.konglish-correct {
+    margin-top: 6px;
+    color: var(--text-main);
+    font-size: 0.98rem;
+    font-weight: 800;
+}
+
+.konglish-correct strong {
+    color: #15803d;
+}
+
+.konglish-message {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+@keyframes konglishPop {
+    0% { opacity: 0; transform: translate(-50%, -18px) scale(0.88) rotate(-2deg); }
+    10% { opacity: 1; transform: translate(-50%, 0) scale(1.04) rotate(1deg); }
+    18% { transform: translate(-50%, 0) scale(1) rotate(0); }
+    78% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -10px) scale(0.96); }
 }
 
 .word-text,
