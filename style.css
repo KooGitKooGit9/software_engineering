@@ -321,6 +321,65 @@ button {
     transform: scale(1.05);
 }
 
+.frequent-review-cta {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px 18px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #fff7ed 0%, #ffe4e6 100%);
+    border: 1px solid rgba(225, 29, 72, 0.18);
+    box-shadow: 0 14px 30px rgba(159, 18, 57, 0.12);
+    color: #7f1d1d;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+}
+
+.frequent-review-cta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 38px rgba(159, 18, 57, 0.18);
+    border-color: rgba(225, 29, 72, 0.32);
+}
+
+.review-cta-icon {
+    flex: 0 0 52px;
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #be123c 0%, #fb7185 100%);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 900;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+.review-cta-copy {
+    min-width: 0;
+}
+
+.review-cta-copy strong,
+.review-cta-copy small {
+    display: block;
+}
+
+.review-cta-copy strong {
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 900;
+}
+
+.review-cta-copy small {
+    margin-top: 4px;
+    font-size: 0.84rem;
+    line-height: 1.35;
+    color: #9f1239;
+    font-weight: 700;
+}
+
 .level-all,
 .retry-btn {
     background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
@@ -328,14 +387,7 @@ button {
     border: 0;
 }
 
-.level-frequent {
-    background: linear-gradient(135deg, #7f1d1d 0%, #e11d48 100%);
-    color: #ffffff;
-    border: 0;
-}
-
-.level-all .level-badge,
-.level-frequent .level-badge {
+.level-all .level-badge {
     background: rgba(255,255,255,0.2);
     color: #ffffff;
 }
@@ -619,6 +671,7 @@ button {
     .header-area { flex-direction: column; text-align: center; gap: 20px; padding-top: 32px; }
     .brand-copy { text-align: center; }
     .brand-subtitle, .section-description { margin-left: auto; margin-right: auto; }
+    .frequent-review-cta { max-width: 420px; margin-left: auto; margin-right: auto; }
     .back-btn { top: 20px; right: 24px; }
 }
 
