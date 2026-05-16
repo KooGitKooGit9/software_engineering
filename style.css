@@ -328,7 +328,14 @@ button {
     border: 0;
 }
 
-.level-all .level-badge {
+.level-frequent {
+    background: linear-gradient(135deg, #7f1d1d 0%, #e11d48 100%);
+    color: #ffffff;
+    border: 0;
+}
+
+.level-all .level-badge,
+.level-frequent .level-badge {
     background: rgba(255,255,255,0.2);
     color: #ffffff;
 }

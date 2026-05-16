@@ -100,6 +100,70 @@ async function startStudy(lv) {
     }
 }
 
+async function startFrequentWrongStudy() {
+    currentLevel = '자주 틀린 단어';
+    if (!_supabase) {
+        alert('데이터베이스가 아직 초기화되지 않았습니다. 잠시 후 다시 시도하세요.');
+        return;
+    }
+
+    document.body.style.cursor = 'wait';
+    try {
+        const { data: frequentRows, error: frequentError } = await _supabase
+            .from('frequent_wrong_words')
+            .select('word, wrong_count')
+            .eq('category', currentCat)
+            .order('wrong_count', { ascending: false });
+
+        if (frequentError) throw frequentError;
+        if (!frequentRows || frequentRows.length === 0) {
+            alert('이 카테고리에는 아직 자주 틀린 단어가 없습니다.');
+            return;
+        }
+
+        const frequentWords = frequentRows.map(row => row.word);
+        const wrongCountByWord = new Map(frequentRows.map(row => [row.word, row.wrong_count]));
+        const { data: allWords, error: wordsError } = await _supabase
+            .from('words')
+            .select('*')
+            .eq('category', currentCat)
+            .in('word', frequentWords);
+
+        if (wordsError) throw wordsError;
+
+        const wordByName = new Map((allWords || []).map(word => [word.word, word]));
+        const reviewWords = frequentWords
+            .map(word => wordByName.get(word))
+            .filter(Boolean);
+
+        if (reviewWords.length === 0) {
+            alert('자주 틀린 단어의 상세 정보를 찾을 수 없습니다.');
+            return;
+        }
+
+        currentList = reviewWords.map(w => ({
+            cat: w.category,
+            level: w.level,
+            word: w.word,
+            mean: w.meaning,
+            pron: w.pronunciation,
+            ex: w.example,
+            exKor: w.example_kor,
+            wrongCount: wrongCountByWord.get(w.word)
+        }));
+
+        idx = 0; countC = 0; countW = 0; wrongList = [];
+        updateStats();
+        showWord();
+        setActiveView('study-view');
+    } catch (e) {
+        console.error('Frequent wrong words fetch error:', e);
+        alert('자주 틀린 단어를 가져오는데 실패했습니다: ' + e.message);
+    } finally {
+        document.body.style.cursor = 'default';
+    }
+}
+
 function showWord() {
     if(idx >= currentList.length) { showResult(); return; }
     const cur = currentList[idx];
