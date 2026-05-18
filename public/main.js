@@ -627,4 +627,284 @@ function speak(e, id) {
     ut.lang = 'en-US';
     window.speechSynthesis.speak(ut);
 }
+
+// ==========================================
+// 🧩 배운 단어로 문장 만들기 (Sentence Builder)
+// ==========================================
+let sentenceList = [];
+let currentSentenceIdx = 0;
+let currentSentenceObj = null;
+let currentSentenceWords = [];
+let sentencePoolWords = [];
+let sentenceSelectedWords = [];
+
+async function startSentenceBuilder() {
+    if (!_supabase) {
+        alert('데이터베이스가 아직 초기화되지 않았습니다. 잠시 후 다시 시도하세요.');
+        return;
+    }
+    
+    document.body.style.cursor = 'wait';
+    try {
+        // 1. Fetch mastered words from correct_history
+        const { data: masteredData, error: mErr } = await _supabase
+            .from('correct_history')
+            .select('word');
+            
+        if (mErr) throw mErr;
+        
+        let wordsToFetch = (masteredData || []).map(w => w.word);
+        let fetchedSentences = [];
+        
+        // 2. If there are mastered words, fetch matching example sentences
+        if (wordsToFetch.length > 0) {
+            const { data: wordsData, error: wErr } = await _supabase
+                .from('words')
+                .select('*')
+                .in('word', wordsToFetch);
+                
+            if (wErr) throw wErr;
+            
+            if (wordsData) {
+                wordsData.forEach(w => {
+                    if (w.example && w.example_kor) {
+                        fetchedSentences.push({
+                            word: w.word,
+                            ex: w.example,
+                            exKor: w.example_kor,
+                            cat: w.category,
+                            level: w.level
+                        });
+                    }
+                });
+            }
+            
+            if (typeof KONGLISH_WORDS !== 'undefined') {
+                KONGLISH_WORDS.forEach(k => {
+                    if (wordsToFetch.includes(k.word) && k.ex && k.exKor) {
+                        fetchedSentences.push({
+                            word: k.word,
+                            ex: k.ex,
+                            exKor: k.exKor,
+                            cat: k.cat,
+                            level: k.level
+                        });
+                    }
+                });
+            }
+        }
+        
+        // 3. Fallback: if user learned < 3 sentences, load random ones to enable playing
+        if (fetchedSentences.length < 3) {
+            console.log("Fallback mode active: loading random sentences");
+            const { data: fallbackWords, error: fErr } = await _supabase
+                .from('words')
+                .select('*')
+                .limit(40);
+                
+            if (fErr) throw fErr;
+            
+            if (fallbackWords) {
+                fallbackWords.forEach(w => {
+                    if (w.example && w.example_kor) {
+                        fetchedSentences.push({
+                            word: w.word,
+                            ex: w.example,
+                            exKor: w.example_kor,
+                            cat: w.category,
+                            level: w.level
+                        });
+                    }
+                });
+            }
+            
+            if (typeof KONGLISH_WORDS !== 'undefined') {
+                KONGLISH_WORDS.forEach(k => {
+                    if (k.ex && k.exKor) {
+                        fetchedSentences.push({
+                            word: k.word,
+                            ex: k.ex,
+                            exKor: k.exKor,
+                            cat: k.cat,
+                            level: k.level
+                        });
+                    }
+                });
+            }
+        }
+        
+        // Deduplicate sentences by the exact example
+        const seen = new Set();
+        sentenceList = fetchedSentences.filter(s => {
+            const cleanEx = s.ex.trim().toLowerCase();
+            if (seen.has(cleanEx)) return false;
+            seen.add(cleanEx);
+            return true;
+        });
+        
+        if (sentenceList.length === 0) {
+            alert('가져올 수 있는 문장 예문이 없습니다. 단어 학습을 먼저 완료해주세요!');
+            return;
+        }
+        
+        // Shuffle and initialize
+        shuffle(sentenceList);
+        currentSentenceIdx = 0;
+        
+        setActiveView('sentence-view');
+        loadNextSentence();
+        
+    } catch (e) {
+        console.error('Sentence Builder Start Error:', e);
+        alert('데이터 로드 중 오류가 발생했습니다: ' + e.message);
+    } finally {
+        document.body.style.cursor = 'default';
+    }
+}
+
+function loadNextSentence() {
+    if (currentSentenceIdx >= sentenceList.length) {
+        alert('🎉 모든 문장 카드를 완료하셨습니다! 처음부터 다시 셔플하여 재생합니다.');
+        shuffle(sentenceList);
+        currentSentenceIdx = 0;
+    }
+    
+    currentSentenceObj = sentenceList[currentSentenceIdx];
+    sentenceSelectedWords = [];
+    
+    // Set target meaning
+    document.getElementById('sentence-meaning').innerText = currentSentenceObj.exKor;
+    
+    // Split into clean words
+    let cleanSentence = currentSentenceObj.ex.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " ").trim();
+    currentSentenceWords = cleanSentence.split(" ");
+    
+    // Decoys
+    const decoys = ["He", "She", "I", "are", "is", "am", "in", "on", "bus", "the", "we", "take", "make", "that", "you", "go", "for", "with", "have", "they", "to", "at", "my", "your"];
+    let selectedDecoys = [];
+    let shuffledDecoys = shuffle([...decoys]);
+    for (let i = 0; i < shuffledDecoys.length; i++) {
+        const d = shuffledDecoys[i];
+        if (!currentSentenceWords.some(w => w.toLowerCase() === d.toLowerCase())) {
+            selectedDecoys.push(d);
+            if (selectedDecoys.length >= 4) break;
+        }
+    }
+    
+    // Combined and Shuffled pool
+    let combined = [...currentSentenceWords, ...selectedDecoys];
+    sentencePoolWords = combined.map((w, index) => ({
+        word: w,
+        id: index,
+        selected: false
+    }));
+    
+    shuffle(sentencePoolWords);
+    renderSentenceBuilder();
+}
+
+function renderSentenceBuilder() {
+    const slotsEl = document.getElementById('sentence-slots');
+    const poolEl = document.getElementById('sentence-pool');
+    
+    slotsEl.innerHTML = '';
+    poolEl.innerHTML = '';
+    
+    // Slots
+    if (sentenceSelectedWords.length === 0) {
+        slotsEl.classList.remove('active');
+        slotsEl.innerHTML = `<span style="color: var(--text-color-muted, #718096); width: 100%; text-align: center; font-size: 0.9rem; font-weight: 600;">아래 낱말 카드를 터치하여 문장을 완성해 보세요!</span>`;
+    } else {
+        slotsEl.classList.add('active');
+        sentenceSelectedWords.forEach((sel, index) => {
+            const chip = document.createElement('div');
+            chip.className = 'word-chip';
+            chip.innerText = sel.word;
+            chip.onclick = () => removeWordFromSlots(index);
+            slotsEl.appendChild(chip);
+        });
+    }
+    
+    // Pool
+    sentencePoolWords.forEach((item) => {
+        const chip = document.createElement('div');
+        chip.className = 'word-chip';
+        chip.innerText = item.word;
+        if (item.selected) {
+            chip.classList.add('selected-hidden');
+        } else {
+            chip.onclick = () => addWordToSlots(item.id);
+        }
+        poolEl.appendChild(chip);
+    });
+}
+
+function addWordToSlots(poolId) {
+    const item = sentencePoolWords.find(p => p.id === poolId);
+    if (!item || item.selected) return;
+    
+    item.selected = true;
+    sentenceSelectedWords.push({
+        word: item.word,
+        poolId: poolId
+    });
+    
+    renderSentenceBuilder();
+}
+
+function removeWordFromSlots(slotIndex) {
+    const removed = sentenceSelectedWords.splice(slotIndex, 1)[0];
+    if (removed) {
+        const item = sentencePoolWords.find(p => p.id === removed.poolId);
+        if (item) item.selected = false;
+    }
+    
+    renderSentenceBuilder();
+}
+
+function clearSentenceSlots() {
+    sentenceSelectedWords = [];
+    sentencePoolWords.forEach(p => p.selected = false);
+    renderSentenceBuilder();
+}
+
+async function submitSentence() {
+    if (sentenceSelectedWords.length === 0) {
+        alert('낱말 카드를 탭하여 문장을 먼저 구성해 주세요!');
+        return;
+    }
+    
+    const userBuilt = sentenceSelectedWords.map(s => s.word).join(" ");
+    
+    const cleanUser = userBuilt.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+    const cleanTarget = currentSentenceObj.ex.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+    
+    if (cleanUser === cleanTarget) {
+        triggerFeedback('success');
+        
+        // Save correct attempt to database for persistence and stats
+        if (_supabase) {
+            saveToDB({
+                word: currentSentenceObj.word,
+                is_correct: true,
+                category: currentSentenceObj.cat || '문장 만들기',
+                level: currentSentenceObj.level || '중'
+            });
+        }
+        
+        currentGlobalXP += 2;
+        renderDashboardUI(currentGlobalXP);
+        showXPAnimation();
+        
+        alert('🎉 완벽합니다! 정답입니다. (+2 XP 획득)');
+        
+        currentSentenceIdx++;
+        loadNextSentence();
+    } else {
+        triggerFeedback('danger');
+        alert(`❌ 틀렸습니다! 다시 한 번 생각해보세요.\n\n[올바른 순서 힌트]: "${currentSentenceObj.ex}"`);
+    }
+}
+
 updateBackButton();
+

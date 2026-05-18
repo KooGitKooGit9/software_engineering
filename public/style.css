@@ -1151,3 +1151,309 @@ button {
     .card { height: 320px; }
     #result-score { font-size: 4.8rem; }
 }
+/****************************************************************
+ * 🧩 배운 단어로 문장 만들기 (Sentence Builder) Styles
+ ****************************************************************/
+.sentence-builder-cta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 26px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 24px;
+    margin-bottom: 32px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+}
+
+.sentence-builder-cta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px 0 rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.4);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.12) 100%);
+}
+
+.sentence-builder-cta .cta-emoji {
+    font-size: 2.2rem;
+    filter: drop-shadow(0 4px 8px rgba(168, 85, 247, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.sentence-builder-cta:hover .cta-emoji {
+    transform: scale(1.15) rotate(8deg);
+}
+
+.sentence-builder-cta .cta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.sentence-builder-cta .cta-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-color, #1a202c);
+    letter-spacing: -0.02em;
+}
+
+.sentence-builder-cta .cta-desc {
+    font-size: 0.85rem;
+    color: var(--text-color-muted, #718096);
+    line-height: 1.45;
+}
+
+.sentence-builder-cta .cta-arrow {
+    font-size: 1.3rem;
+    color: #a855f7;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sentence-builder-cta:hover .cta-arrow {
+    transform: translateX(6px);
+}
+
+/* 🧩 Sentence Builder Game Area */
+.sentence-view {
+    display: none;
+}
+
+.sentence-view.active {
+    display: block;
+}
+
+.sentence-layout {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 40px;
+    align-items: start;
+    margin-top: 24px;
+}
+
+.sentence-question-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.sentence-target-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 20px 24px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01), 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.target-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #a855f7;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.target-meaning {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-color, #1a202c);
+    line-height: 1.5;
+}
+
+.sentence-slots-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.slots-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-color, #4a5568);
+    letter-spacing: -0.01em;
+}
+
+.btn-clear-slots {
+    background: rgba(229, 62, 62, 0.05);
+    border: 1px solid rgba(229, 62, 62, 0.1);
+    color: #e53e3e;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-clear-slots:hover {
+    background: #e53e3e;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
+}
+
+.sentence-slots {
+    min-height: 120px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-content: flex-start;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.sentence-slots.active {
+    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.02);
+}
+
+.sentence-action-panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 28px;
+    border-radius: 28px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03);
+}
+
+.pool-header {
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-bottom: 18px;
+    color: var(--text-color, #2d3748);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 10px;
+    text-align: left;
+}
+
+.sentence-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-height: 140px;
+    align-content: flex-start;
+    margin-bottom: 28px;
+}
+
+.word-chip {
+    padding: 10px 18px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: #2d3748;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.02);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.word-chip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: #4f46e5;
+}
+
+.word-chip:active {
+    transform: translateY(1px);
+}
+
+/* 칩이 슬롯에 들어갔을 때 */
+.sentence-slots .word-chip {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.sentence-slots .word-chip:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* 선택되어 수영장에서 숨겨진 칩의 상태 */
+.word-chip.selected-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.7) translateY(10px);
+    width: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    overflow: hidden;
+}
+
+.btn-sentence-submit {
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.05rem;
+    border: none;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+}
+
+.btn-sentence-submit:hover {
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.4);
+    transform: translateY(-3px);
+}
+
+/* 🧩 Responsive styles for sentence builder */
+@media (max-width: 900px) {
+    .sentence-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sentence-builder-cta {
+        padding: 16px 20px;
+        margin-bottom: 24px;
+    }
+    .sentence-builder-cta .cta-emoji {
+        font-size: 1.8rem;
+    }
+    .sentence-builder-cta .cta-title {
+        font-size: 1.05rem;
+    }
+    .sentence-builder-cta .cta-desc {
+        font-size: 0.8rem;
+    }
+    .sentence-slots {
+        min-height: 90px;
+        padding: 12px;
+        gap: 8px;
+    }
+    .sentence-pool {
+        min-height: 100px;
+        gap: 8px;
+    }
+    .word-chip {
+        padding: 8px 14px;
+        font-size: 0.88rem;
+    }
+}
+
