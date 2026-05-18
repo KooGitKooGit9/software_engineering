@@ -122,6 +122,236 @@ function shuffle(array) {
     }
     return array;
 }
+
+const KONGLISH_WORDS = [
+    {
+        cat: '1. 수능 영단어',
+        level: '상',
+        word: 'Cunning',
+        mean: '컨닝은 cheating이라고 해요.',
+        pron: '커닝',
+        ex: 'Cheating on a test is never acceptable.',
+        exKor: '시험에서 부정행위를 하는 것은 절대 괜찮지 않아요.',
+        isKonglish: true,
+        konglishCorrect: 'cheating',
+        konglishMessage: '한국어의 컨닝은 영어권에서 cheating이 자연스러운 표현이에요.'
+    },
+    {
+        cat: '1. 수능 영단어',
+        level: '중',
+        word: 'Note',
+        mean: '공책은 notebook이라고 해요.',
+        pron: '노트',
+        ex: 'I wrote the answer in my notebook.',
+        exKor: '나는 공책에 답을 적었어요.',
+        isKonglish: true,
+        konglishCorrect: 'notebook',
+        konglishMessage: 'note는 짧은 메모나 기록에 가깝고, 공책은 notebook이 더 정확해요.'
+    },
+    {
+        cat: '1. 수능 영단어',
+        level: '하',
+        word: 'Sharp',
+        mean: '샤프는 mechanical pencil이라고 해요.',
+        pron: '샤프',
+        ex: 'Can I borrow your mechanical pencil?',
+        exKor: '네 샤프 좀 빌릴 수 있을까?',
+        isKonglish: true,
+        konglishCorrect: 'mechanical pencil',
+        konglishMessage: 'sharp만 말하면 날카로운이라는 뜻으로 먼저 이해돼요.'
+    },
+    {
+        cat: '2. 일상 회화',
+        level: '상',
+        word: 'One piece',
+        mean: '원피스는 영어로 dress라고 해요.',
+        pron: '원 피스',
+        ex: 'She wore a dress to the party.',
+        exKor: '그녀는 파티에 원피스를 입고 갔어요.',
+        isKonglish: true,
+        konglishCorrect: 'dress',
+        konglishMessage: '한국식으로는 익숙하지만 영어권에서는 one-piece보다 dress가 자연스러워요.'
+    },
+    {
+        cat: '2. 일상 회화',
+        level: '중',
+        word: 'Hand phone',
+        mean: '휴대폰은 영어로 cell phone 또는 mobile phone이에요.',
+        pron: '핸드 폰',
+        ex: 'My cell phone battery is low.',
+        exKor: '내 휴대폰 배터리가 부족해요.',
+        isKonglish: true,
+        konglishCorrect: 'cell phone',
+        konglishMessage: 'hand phone이라고 하면 의미는 짐작할 수 있어도 실제 표현은 cell phone이 자연스러워요.'
+    },
+    {
+        cat: '2. 일상 회화',
+        level: '하',
+        word: 'Fighting',
+        mean: '응원할 때는 You can do it! 또는 Good luck!이라고 해요.',
+        pron: '파이팅',
+        ex: 'You can do it!',
+        exKor: '넌 할 수 있어!',
+        isKonglish: true,
+        konglishCorrect: 'You can do it!',
+        konglishMessage: 'fighting은 영어권에서 응원 구호로 잘 쓰이지 않아요.'
+    },
+    {
+        cat: '3. 여행 필수',
+        level: '상',
+        word: 'Pension',
+        mean: '여행 숙소 펜션은 cottage 또는 vacation rental이라고 해요.',
+        pron: '펜션',
+        ex: 'We stayed at a cottage near the beach.',
+        exKor: '우리는 해변 근처 펜션에 머물렀어요.',
+        isKonglish: true,
+        konglishCorrect: 'cottage',
+        konglishMessage: 'pension은 주로 연금이라는 뜻이라 숙소 의미로는 다르게 들릴 수 있어요.'
+    },
+    {
+        cat: '3. 여행 필수',
+        level: '중',
+        word: 'Concent',
+        mean: '콘센트는 outlet이라고 해요.',
+        pron: '콘센트',
+        ex: 'Is there an outlet near the bed?',
+        exKor: '침대 근처에 콘센트가 있나요?',
+        isKonglish: true,
+        konglishCorrect: 'outlet',
+        konglishMessage: '영어권에서는 plug socket이나 outlet이 자연스러워요.'
+    },
+    {
+        cat: '3. 여행 필수',
+        level: '하',
+        word: 'Vinyl',
+        mean: '비닐봉지는 plastic bag이라고 해요.',
+        pron: '바이닐',
+        ex: 'Can I have a plastic bag?',
+        exKor: '비닐봉지 하나 받을 수 있을까요?',
+        isKonglish: true,
+        konglishCorrect: 'plastic bag',
+        konglishMessage: 'vinyl은 소재 이름에 가깝고, 봉지는 plastic bag이라고 말해요.'
+    },
+    {
+        cat: '4. 설레는 연애',
+        level: '상',
+        word: 'Skinship',
+        mean: '스킨십은 physical affection이라고 해요.',
+        pron: '스킨십',
+        ex: 'They show physical affection naturally.',
+        exKor: '그들은 자연스럽게 애정 표현을 해요.',
+        isKonglish: true,
+        konglishCorrect: 'physical affection',
+        konglishMessage: 'skinship은 영어권에서 일반적으로 쓰는 표현은 아니에요.'
+    },
+    {
+        cat: '4. 설레는 연애',
+        level: '중',
+        word: 'Meeting',
+        mean: '소개팅은 blind date라고 해요.',
+        pron: '미팅',
+        ex: 'I went on a blind date last weekend.',
+        exKor: '나는 지난 주말에 소개팅을 했어요.',
+        isKonglish: true,
+        konglishCorrect: 'blind date',
+        konglishMessage: 'meeting은 회의나 만남 전체를 뜻하고, 소개팅은 blind date가 자연스러워요.'
+    },
+    {
+        cat: '4. 설레는 연애',
+        level: '하',
+        word: 'Couple look',
+        mean: '커플룩은 matching outfits라고 해요.',
+        pron: '커플 룩',
+        ex: 'They wore matching outfits.',
+        exKor: '그들은 커플룩을 입었어요.',
+        isKonglish: true,
+        konglishCorrect: 'matching outfits',
+        konglishMessage: 'couple look보다 matching outfits가 더 자연스럽게 들려요.'
+    },
+    {
+        cat: '5. 비즈니스',
+        level: '상',
+        word: 'Claim',
+        mean: '고객 클레임은 complaint라고 해요.',
+        pron: '클레임',
+        ex: 'We received a customer complaint.',
+        exKor: '우리는 고객 불만을 접수했어요.',
+        isKonglish: true,
+        konglishCorrect: 'complaint',
+        konglishMessage: 'claim은 주장이나 청구의 뜻이 강해서 고객 불만은 complaint가 맞아요.'
+    },
+    {
+        cat: '5. 비즈니스',
+        level: '중',
+        word: 'A/S',
+        mean: 'A/S는 after-sales service 또는 repair service라고 해요.',
+        pron: '에이 에스',
+        ex: 'Does this product include after-sales service?',
+        exKor: '이 제품은 A/S가 포함되나요?',
+        isKonglish: true,
+        konglishCorrect: 'after-sales service',
+        konglishMessage: 'A/S라는 줄임말은 영어권에서 바로 통하지 않을 수 있어요.'
+    },
+    {
+        cat: '5. 비즈니스',
+        level: '하',
+        word: 'Name card',
+        mean: '명함은 business card라고 해요.',
+        pron: '네임 카드',
+        ex: 'Can I have your business card?',
+        exKor: '명함 한 장 받을 수 있을까요?',
+        isKonglish: true,
+        konglishCorrect: 'business card',
+        konglishMessage: 'name card보다 business card가 실제 비즈니스 표현이에요.'
+    },
+    {
+        cat: '6. 토익 기출',
+        level: '상',
+        word: 'Sign',
+        mean: '서명은 signature라고 해요.',
+        pron: '사인',
+        ex: 'Please write your signature here.',
+        exKor: '여기에 서명해 주세요.',
+        isKonglish: true,
+        konglishCorrect: 'signature',
+        konglishMessage: 'sign은 동사로 서명하다 또는 표지판 의미가 강하고, 명사는 signature가 정확해요.'
+    },
+    {
+        cat: '6. 토익 기출',
+        level: '중',
+        word: 'Part-time',
+        mean: '아르바이트는 part-time job이라고 해요.',
+        pron: '파트 타임',
+        ex: 'I have a part-time job after school.',
+        exKor: '나는 방과 후에 아르바이트를 해요.',
+        isKonglish: true,
+        konglishCorrect: 'part-time job',
+        konglishMessage: 'part-time만으로는 형용사라 job을 붙여 말하는 편이 자연스러워요.'
+    },
+    {
+        cat: '6. 토익 기출',
+        level: '하',
+        word: 'Schedule',
+        mean: '스케줄이 많다는 말은 busy schedule이라고 해요.',
+        pron: '스케줄',
+        ex: 'I have a busy schedule today.',
+        exKor: '나는 오늘 스케줄이 많아요.',
+        isKonglish: true,
+        konglishCorrect: 'busy schedule',
+        konglishMessage: 'schedule 자체는 일정이라는 뜻이라 상황에 맞는 형용사를 함께 쓰면 자연스러워요.'
+    }
+];
+
+function getKonglishWordsFor(level, masteredSet, existingWords) {
+    const existingSet = new Set(existingWords.map(item => item.word.toLowerCase()));
+    return KONGLISH_WORDS
+        .filter(item => item.cat === currentCat)
+        .filter(item => (level === '전체' || item.level === level))
+        .filter(item => !masteredSet.has(item.word))
+        .filter(item => !existingSet.has(item.word.toLowerCase()))
+        .map(item => ({ ...item }));
+}
+
 function goHome() { viewHistory.length = 0; setActiveView('home-view', { pushHistory: false }); }
 function goBack() {
     if (viewHistory.length === 0) return;
@@ -157,16 +387,18 @@ async function startStudy(lv) {
 
         // 3. Filter
         const filtered = allWords.filter(w => !masteredSet.has(w.word));
-        if (filtered.length === 0) {
+        const regularWords = filtered.map(w => ({
+            cat: w.category, level: w.level, word: w.word, mean: w.meaning,
+            pron: w.pronunciation, ex: w.example, exKor: w.example_kor
+        }));
+        const konglishWords = getKonglishWordsFor(lv, masteredSet, regularWords);
+        if (regularWords.length + konglishWords.length === 0) {
             alert('학습할 수 있는 새로운 단어가 없습니다! (이미 모두 맞혔거나 이 카테고리에 단어가 없습니다)');
             document.body.style.cursor = 'default';
             return;
         }
 
-        currentList = shuffle(filtered.map(w => ({
-            cat: w.category, level: w.level, word: w.word, mean: w.meaning,
-            pron: w.pronunciation, ex: w.example, exKor: w.example_kor
-        })));
+        currentList = shuffle([...regularWords, ...konglishWords]);
 
         idx = 0; countC = 0; countW = 0; wrongList = [];
         updateStats();
