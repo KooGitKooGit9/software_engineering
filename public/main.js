@@ -13,7 +13,76 @@ window.addEventListener('load', () => {
     }
     _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log('Supabase Client Initialized');
+    updateLevelDashboard();
 });
+
+// --- Level System ---
+function openInfoModal() {
+    document.getElementById('info-modal').classList.add('show');
+}
+function closeInfoModal(e) {
+    if (e && e.target !== document.getElementById('info-modal') && !e.target.closest('.modal-close')) return;
+    document.getElementById('info-modal').classList.remove('show');
+}
+
+let currentGlobalXP = 0;
+let totalGlobalWords = 100;
+
+async function updateLevelDashboard() {
+    if (!_supabase) return;
+    try {
+        const { count: xpCount, error: xpError } = await _supabase
+            .from('correct_history')
+            .select('*', { count: 'exact', head: true });
+        if (xpError) throw xpError;
+
+        currentGlobalXP = (xpCount || 0) * 2;
+        renderDashboardUI(currentGlobalXP);
+    } catch (e) {
+        console.error('Failed to update level dashboard:', e);
+    }
+}
+
+function renderDashboardUI(xp) {
+    let lv = 1, title = '🐥 병아리', minXP = 0, maxXP = 10;
+    
+    if (xp <= 10) { lv = 1; title = '🐥 병아리'; minXP = 0; maxXP = 10; }
+    else if (xp <= 30) { lv = 2; title = '🏃 초보'; minXP = 11; maxXP = 30; }
+    else if (xp <= 60) { lv = 3; title = '🔥 중수'; minXP = 31; maxXP = 60; }
+    else if (xp <= 100) { lv = 4; title = '👑 실력자'; minXP = 61; maxXP = 100; }
+    else { lv = 5; title = '💎 마스터'; minXP = 101; maxXP = xp; }
+    
+    const levelBadge = document.querySelector('.level-badge-large');
+    const levelDesc = document.querySelector('.level-desc');
+    const progressFill = document.querySelector('.progress-fill');
+    const progressText = document.querySelector('.progress-text');
+    
+    if (levelBadge) levelBadge.innerText = `Lv. ${lv}`;
+    if (levelDesc) levelDesc.innerText = title;
+    
+    if (progressFill && progressText) {
+        if (lv === 5) {
+            progressFill.style.width = '100%';
+            progressText.innerText = `${xp} XP (마스터)`;
+        } else {
+            const currentTierXP = xp - minXP;
+            const tierTotalXP = maxXP - minXP + 1;
+            const percentage = Math.min(100, Math.max(0, (currentTierXP / tierTotalXP) * 100));
+            progressFill.style.width = `${percentage}%`;
+            progressText.innerText = `${xp} / ${maxXP + 1} XP`;
+        }
+    }
+}
+
+function showXPAnimation() {
+    const wrap = document.querySelector('.progress-wrap');
+    if (!wrap) return;
+    const plusOne = document.createElement('span');
+    plusOne.className = 'xp-plus-one';
+    plusOne.innerText = '+2';
+    wrap.appendChild(plusOne);
+    setTimeout(() => plusOne.remove(), 1000);
+}
 
 let db = [];
 let currentCat = '', currentLevel = '', currentList = [], wrongList = [], idx = 0, countC = 0, countW = 0;
@@ -243,7 +312,19 @@ function setActiveView(viewId, options = {}) {
     if (pushHistory && currentView !== viewId) viewHistory.push(currentView);
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
+    
+    const appLayout = document.querySelector('.app-layout');
+    if (appLayout) {
+        if (viewId === 'home-view') {
+            appLayout.classList.add('show-dashboard');
+            updateLevelDashboard();
+        } else {
+            appLayout.classList.remove('show-dashboard');
+        }
+    }
+    
     currentView = viewId;
+    
     updateBackButton();
 }
 
@@ -441,6 +522,10 @@ function answer(isC) {
     }
     if(isC) {
         countC++; triggerFeedback('success'); updateStats('correct');
+        // Instantly update XP visually
+        currentGlobalXP += 2;
+        renderDashboardUI(currentGlobalXP);
+        showXPAnimation();
     } else {
         countW++; wrongList.push(cur); triggerFeedback('danger'); updateStats('wrong');
     }

@@ -244,6 +244,16 @@ function setActiveView(viewId, options = {}) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
     currentView = viewId;
+    
+    const appLayout = document.getElementById('app-layout');
+    if (appLayout) {
+        if (viewId === 'home-view') {
+            appLayout.classList.add('show-dashboard');
+        } else {
+            appLayout.classList.remove('show-dashboard');
+        }
+    }
+    
     updateBackButton();
 }
 

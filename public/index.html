@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <button id="back-button" class="back-btn" type="button" onclick="goBack()" aria-label="뒤로가기">뒤로가기</button>
+    <div class="app-layout show-dashboard" id="app-layout">
+        <div class="container" id="main-container">
+            <button id="back-button" class="back-btn" type="button" onclick="goBack()" aria-label="뒤로가기">뒤로가기</button>
 
         <div class="header-area" onclick="handleHeaderClick(event)">
             <div class="brand-mark">👆</div>
@@ -173,6 +174,53 @@
                     <div id="result-score">0%</div>
                 </div>
             </div>
+        </div>
+        </div>
+        
+        <div class="level-dashboard" id="level-dashboard">
+            <div class="dashboard-inner">
+                <div class="dashboard-header">
+                    <div class="header-title-wrap">
+                        <span class="dashboard-icon">🏆</span>
+                        <h3 class="dashboard-title">My Level</h3>
+                    </div>
+                    <button class="info-btn" onclick="openInfoModal()" aria-label="레벨 안내">ⓘ</button>
+                </div>
+                <div class="dashboard-content">
+                    <div class="level-badge-large">Lv. 3</div>
+                    <p class="level-desc">초보 탈출</p>
+                    <div class="progress-wrap">
+                        <div class="progress-bar"><div class="progress-fill" style="width: 45%;"></div></div>
+                        <span class="progress-text">45 / 100 XP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Level Info Modal -->
+    <div class="modal-overlay" id="info-modal" onclick="closeInfoModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeInfoModal()">&times;</button>
+            <h2 class="modal-title">🏆 레벨 시스템 안내</h2>
+            <p class="modal-desc">새로운 단어를 맞힐 때마다 <strong>2 XP</strong>가 상승합니다.<br>꾸준히 학습하여 마스터에 도전하세요!</p>
+            <table class="level-table">
+                <thead>
+                    <tr>
+                        <th>레벨</th>
+                        <th>칭호</th>
+                        <th>필요 경험치 (EXP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="lv-badge lv1">Lv. 1</span></td><td>🐥 병아리</td><td>0 ~ 10</td></tr>
+                    <tr><td><span class="lv-badge lv2">Lv. 2</span></td><td>🏃 초보</td><td>11 ~ 30</td></tr>
+                    <tr><td><span class="lv-badge lv3">Lv. 3</span></td><td>🔥 중수</td><td>31 ~ 60</td></tr>
+                    <tr><td><span class="lv-badge lv4">Lv. 4</span></td><td>👑 실력자</td><td>61 ~ 100</td></tr>
+                    <tr><td><span class="lv-badge lv5">Lv. 5</span></td><td>💎 마스터</td><td>101+</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
