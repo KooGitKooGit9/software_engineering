@@ -50,7 +50,7 @@ function renderDashboardUI(xp) {
     else if (xp <= 30) { lv = 2; title = '🏃 초보'; minXP = 11; maxXP = 30; }
     else if (xp <= 60) { lv = 3; title = '🔥 중수'; minXP = 31; maxXP = 60; }
     else if (xp <= 100) { lv = 4; title = '👑 실력자'; minXP = 61; maxXP = 100; }
-    else { lv = 5; title = '💎 콩글리시 마스터'; minXP = 101; maxXP = xp; }
+    else { lv = 5; title = '💎 마스터'; minXP = 101; maxXP = xp; }
     
     const levelBadge = document.querySelector('.level-badge-large');
     const levelDesc = document.querySelector('.level-desc');
@@ -88,41 +88,6 @@ let db = [];
 let currentCat = '', currentLevel = '', currentList = [], wrongList = [], idx = 0, countC = 0, countW = 0;
 let currentView = 'home-view';
 const viewHistory = [];
-
-function setActiveView(viewId, options = {}) {
-    const { pushHistory = true } = options;
-    if (pushHistory && currentView !== viewId) viewHistory.push(currentView);
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(viewId).classList.add('active');
-    
-    const appLayout = document.querySelector('.app-layout');
-    if (appLayout) {
-        if (viewId === 'home-view') {
-            appLayout.classList.add('show-dashboard');
-            updateLevelDashboard();
-        } else {
-            appLayout.classList.remove('show-dashboard');
-        }
-    }
-    
-    currentView = viewId;
-    updateBackButton();
-}
-
-function updateBackButton() {
-    const btn = document.getElementById('back-button');
-    if (btn) btn.classList.toggle('visible', viewHistory.length > 0);
-}
-
-function handleHeaderClick(e) { goHome(); }
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
 const KONGLISH_WORDS = [
     {
         cat: '1. 수능 영단어',
@@ -342,6 +307,41 @@ const KONGLISH_WORDS = [
     }
 ];
 
+function setActiveView(viewId, options = {}) {
+    const { pushHistory = true } = options;
+    if (pushHistory && currentView !== viewId) viewHistory.push(currentView);
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+    
+    const appLayout = document.querySelector('.app-layout');
+    if (appLayout) {
+        if (viewId === 'home-view') {
+            appLayout.classList.add('show-dashboard');
+            updateLevelDashboard();
+        } else {
+            appLayout.classList.remove('show-dashboard');
+        }
+    }
+    
+    currentView = viewId;
+    
+    updateBackButton();
+}
+
+function updateBackButton() {
+    const btn = document.getElementById('back-button');
+    if (btn) btn.classList.toggle('visible', viewHistory.length > 0);
+}
+
+function handleHeaderClick(e) { goHome(); }
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 function getKonglishWordsFor(level, masteredSet, existingWords) {
     const existingSet = new Set(existingWords.map(item => item.word.toLowerCase()));
     return KONGLISH_WORDS
@@ -351,7 +351,6 @@ function getKonglishWordsFor(level, masteredSet, existingWords) {
         .filter(item => !existingSet.has(item.word.toLowerCase()))
         .map(item => ({ ...item }));
 }
-
 function goHome() { viewHistory.length = 0; setActiveView('home-view', { pushHistory: false }); }
 function goBack() {
     if (viewHistory.length === 0) return;
@@ -389,7 +388,8 @@ async function startStudy(lv) {
         const filtered = allWords.filter(w => !masteredSet.has(w.word));
         const regularWords = filtered.map(w => ({
             cat: w.category, level: w.level, word: w.word, mean: w.meaning,
-            pron: w.pronunciation, ex: w.example, exKor: w.example_kor
+            pron: w.pronunciation, ex: w.example, exKor: w.example_kor,
+            imageUrl: w.image_url
         }));
         const konglishWords = getKonglishWordsFor(lv, masteredSet, regularWords);
         if (regularWords.length + konglishWords.length === 0) {
@@ -461,6 +461,7 @@ async function startFrequentWrongStudy() {
             pron: w.pronunciation,
             ex: w.example,
             exKor: w.example_kor,
+            imageUrl: w.image_url,
             wrongCount: wrongCountByWord.get(w.word)
         }));
 
@@ -485,6 +486,17 @@ function showWord() {
     document.getElementById('a-meaning').innerText = cur.mean;
     document.getElementById('a-ex').innerText = cur.ex;
     document.getElementById('a-ex-kor').innerText = cur.exKor;
+    
+    const imgContainer = document.getElementById('card-image-container');
+    const imgEl = document.getElementById('card-image');
+    if (cur.imageUrl) {
+        imgEl.src = cur.imageUrl;
+        imgContainer.style.display = 'flex';
+    } else {
+        imgContainer.style.display = 'none';
+        imgEl.src = '';
+    }
+
     document.getElementById('flashcard').classList.remove('flipped', 'konglish-revealed');
     hideKonglishEvent();
 }
@@ -503,14 +515,12 @@ function triggerKonglishEvent() {
 
     document.getElementById('flashcard').classList.add('konglish-revealed');
     const event = document.getElementById('konglish-event');
-    if (event && cur.konglishCorrect) {
-        document.getElementById('konglish-correct').innerText = cur.konglishCorrect;
-        document.getElementById('konglish-message').innerText = cur.konglishMessage;
-        event.classList.remove('show');
-        void event.offsetWidth;
-        event.classList.add('show');
-        setTimeout(() => event.classList.remove('show'), 3600);
-    }
+    document.getElementById('konglish-correct').innerText = cur.konglishCorrect;
+    document.getElementById('konglish-message').innerText = cur.konglishMessage;
+    event.classList.remove('show');
+    void event.offsetWidth;
+    event.classList.add('show');
+    setTimeout(() => event.classList.remove('show'), 3600);
 }
 
 function hideKonglishEvent() {
@@ -520,9 +530,7 @@ function hideKonglishEvent() {
 
 function answer(isC) {
     const cur = currentList[idx];
-    if (!cur.isKonglish) {
-        saveToDB({ word: cur.word, is_correct: isC, category: cur.cat || currentCat, level: cur.level || currentLevel });
-    }
+    saveToDB({ word: cur.word, is_correct: isC, category: cur.cat || currentCat, level: cur.level || currentLevel });
     if(isC) {
         countC++; triggerFeedback('success'); updateStats('correct');
         // Instantly update XP visually
@@ -838,9 +846,13 @@ function loadNextSentence() {
     }
     
     // Combined and Shuffled pool
-    let combined = [...currentSentenceWords, ...selectedDecoys];
-    sentencePoolWords = combined.map((w, index) => ({
-        word: w,
+    let combined = [
+        ...currentSentenceWords.map(w => ({ word: w, isDecoy: false })),
+        ...selectedDecoys.map(w => ({ word: w, isDecoy: true }))
+    ];
+    sentencePoolWords = combined.map((item, index) => ({
+        word: item.word,
+        isDecoy: item.isDecoy,
         id: index,
         selected: false
     }));
@@ -883,6 +895,31 @@ function renderSentenceBuilder() {
         }
         poolEl.appendChild(chip);
     });
+    
+    // 5줄 오버플로우 방지 (데코이 제거)
+    if (sentenceSelectedWords.length === 0) {
+        let maxLoops = 3;
+        while (poolEl.scrollHeight > 190 && maxLoops > 0) {
+            const decoyIndex = sentencePoolWords.findIndex(p => p.isDecoy);
+            if (decoyIndex !== -1) {
+                sentencePoolWords.splice(decoyIndex, 1);
+                
+                // 다시 렌더링
+                poolEl.innerHTML = '';
+                sentencePoolWords.forEach((item) => {
+                    const chip = document.createElement('div');
+                    chip.className = 'word-chip';
+                    chip.innerText = item.word;
+                    if (item.selected) chip.classList.add('selected-hidden');
+                    else chip.onclick = () => addWordToSlots(item.id);
+                    poolEl.appendChild(chip);
+                });
+            } else {
+                break;
+            }
+            maxLoops--;
+        }
+    }
 }
 
 function addWordToSlots(poolId) {
@@ -945,7 +982,7 @@ function showCustomPopup(message, type = 'info') {
 
 function showSentenceHint() {
     if (!currentSentenceObj) return;
-    showCustomPopup(`💡 문장 힌트:\n${currentSentenceObj.ex}`, 'info');
+    showCustomPopup(`💡 힌트: ${currentSentenceObj.word}`, 'info');
 }
 
 async function submitSentence() {
@@ -982,7 +1019,7 @@ async function submitSentence() {
         loadNextSentence();
     } else {
         triggerFeedback('danger');
-        showCustomPopup(`❌ 틀렸습니다! 다시 한 번 생각해보세요.\n\n[올바른 순서 힌트]: "${currentSentenceObj.ex}"`, 'error');
+        showCustomPopup(`❌ 틀렸습니다! 다시 한 번 생각해보세요.`, 'error');
     }
 }
 

@@ -126,12 +126,16 @@
                                 <div class="card-hint">카드를 터치하면 뜻과 예문이 펼쳐집니다</div>
                             </div>
                             <div class="card-back">
+
                                 <div class="answer-head">
                                     <span id="a-word" class="answer-word"></span>
                                     <button class="tts-icon" type="button" onclick="speak(event, 'a-word')">🔊</button>
                                 </div>
                                 <div id="a-pron" class="pron-text"></div>
                                 <div id="a-meaning" class="meaning-text"></div>
+                                <div class="card-image-container" id="card-image-container" style="display: none;">
+                                    <img id="card-image" src="" alt="Flashcard Image" />
+                                </div>
                                 <div class="example-box">
                                     <div class="example-line">
                                         <span id="a-ex"></span>
@@ -270,6 +274,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="main-v2.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

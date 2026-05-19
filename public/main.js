@@ -388,7 +388,8 @@ async function startStudy(lv) {
         const filtered = allWords.filter(w => !masteredSet.has(w.word));
         const regularWords = filtered.map(w => ({
             cat: w.category, level: w.level, word: w.word, mean: w.meaning,
-            pron: w.pronunciation, ex: w.example, exKor: w.example_kor
+            pron: w.pronunciation, ex: w.example, exKor: w.example_kor,
+            imageUrl: w.image_url
         }));
         const konglishWords = getKonglishWordsFor(lv, masteredSet, regularWords);
         if (regularWords.length + konglishWords.length === 0) {
@@ -460,6 +461,7 @@ async function startFrequentWrongStudy() {
             pron: w.pronunciation,
             ex: w.example,
             exKor: w.example_kor,
+            imageUrl: w.image_url,
             wrongCount: wrongCountByWord.get(w.word)
         }));
 
@@ -484,6 +486,17 @@ function showWord() {
     document.getElementById('a-meaning').innerText = cur.mean;
     document.getElementById('a-ex').innerText = cur.ex;
     document.getElementById('a-ex-kor').innerText = cur.exKor;
+    
+    const imgContainer = document.getElementById('card-image-container');
+    const imgEl = document.getElementById('card-image');
+    if (cur.imageUrl) {
+        imgEl.src = cur.imageUrl;
+        imgContainer.style.display = 'flex';
+    } else {
+        imgContainer.style.display = 'none';
+        imgEl.src = '';
+    }
+
     document.getElementById('flashcard').classList.remove('flipped', 'konglish-revealed');
     hideKonglishEvent();
 }
@@ -517,9 +530,7 @@ function hideKonglishEvent() {
 
 function answer(isC) {
     const cur = currentList[idx];
-    if (!cur.isKonglish) {
-        saveToDB({ word: cur.word, is_correct: isC, category: cur.cat || currentCat, level: cur.level || currentLevel });
-    }
+    saveToDB({ word: cur.word, is_correct: isC, category: cur.cat || currentCat, level: cur.level || currentLevel });
     if(isC) {
         countC++; triggerFeedback('success'); updateStats('correct');
         // Instantly update XP visually
@@ -835,9 +846,13 @@ function loadNextSentence() {
     }
     
     // Combined and Shuffled pool
-    let combined = [...currentSentenceWords, ...selectedDecoys];
-    sentencePoolWords = combined.map((w, index) => ({
-        word: w,
+    let combined = [
+        ...currentSentenceWords.map(w => ({ word: w, isDecoy: false })),
+        ...selectedDecoys.map(w => ({ word: w, isDecoy: true }))
+    ];
+    sentencePoolWords = combined.map((item, index) => ({
+        word: item.word,
+        isDecoy: item.isDecoy,
         id: index,
         selected: false
     }));
@@ -880,6 +895,31 @@ function renderSentenceBuilder() {
         }
         poolEl.appendChild(chip);
     });
+    
+    // 5줄 오버플로우 방지 (데코이 제거)
+    if (sentenceSelectedWords.length === 0) {
+        let maxLoops = 3;
+        while (poolEl.scrollHeight > 190 && maxLoops > 0) {
+            const decoyIndex = sentencePoolWords.findIndex(p => p.isDecoy);
+            if (decoyIndex !== -1) {
+                sentencePoolWords.splice(decoyIndex, 1);
+                
+                // 다시 렌더링
+                poolEl.innerHTML = '';
+                sentencePoolWords.forEach((item) => {
+                    const chip = document.createElement('div');
+                    chip.className = 'word-chip';
+                    chip.innerText = item.word;
+                    if (item.selected) chip.classList.add('selected-hidden');
+                    else chip.onclick = () => addWordToSlots(item.id);
+                    poolEl.appendChild(chip);
+                });
+            } else {
+                break;
+            }
+            maxLoops--;
+        }
+    }
 }
 
 function addWordToSlots(poolId) {
@@ -942,7 +982,7 @@ function showCustomPopup(message, type = 'info') {
 
 function showSentenceHint() {
     if (!currentSentenceObj) return;
-    showCustomPopup(`💡 문장 힌트:\n${currentSentenceObj.ex}`, 'info');
+    showCustomPopup(`💡 힌트: ${currentSentenceObj.word}`, 'info');
 }
 
 async function submitSentence() {
@@ -979,7 +1019,7 @@ async function submitSentence() {
         loadNextSentence();
     } else {
         triggerFeedback('danger');
-        showCustomPopup(`❌ 틀렸습니다! 다시 한 번 생각해보세요.\n\n[올바른 순서 힌트]: "${currentSentenceObj.ex}"`, 'error');
+        showCustomPopup(`❌ 틀렸습니다! 다시 한 번 생각해보세요.`, 'error');
     }
 }
 
