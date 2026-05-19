@@ -6,10 +6,10 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 async function updateVacationImage() {
     console.log('Updating Vacation image_url...');
     
-    // Vacation 단어의 image_url을 images/vacation.png로 업데이트
+    // Vacation 단어의 image_url을 images/vacation.jpg로 업데이트
     const { data, error } = await supabase
         .from('words')
-        .update({ image_url: 'images/vacation.png' })
+        .update({ image_url: 'images/vacation.jpg' })
         .eq('word', 'Vacation')
         .select();
 
