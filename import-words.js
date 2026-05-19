@@ -15,11 +15,56 @@ const words = [
   {
     "cat": "1. 수능 영단어",
     "level": "상",
+    "word": "Ambivalent",
+    "mean": "반대 감정이 병존하는",
+    "pron": "앰비벌런트",
+    "ex": "She has ambivalent feelings about her job.",
+    "exKor": "그녀는 그녀의 직업에 대해 복잡한 감정을 가지고 있다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Ambitious",
+    "mean": "야심 있는",
+    "pron": "앰비셔스",
+    "ex": "The plan was too ambitious.",
+    "exKor": "그 계획은 너무 야심찼다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Anonymous",
+    "mean": "익명의",
+    "pron": "어나니머스",
+    "ex": "The donor wished to remain anonymous.",
+    "exKor": "기부자는 익명으로 남기를 원했다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
     "word": "Inevitably",
     "mean": "불가피하게",
     "pron": "이네비터블리",
     "ex": "It will inevitably happen.",
     "exKor": "그것은 불가피하게 일어날 것이다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Inimitably",
+    "mean": "독특하게",
+    "pron": "이니미터블리",
+    "ex": "She sang inimitably well.",
+    "exKor": "그녀는 독보적으로 노래를 잘 불렀다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Invariably",
+    "mean": "변함없이",
+    "pron": "인베리어블리",
+    "ex": "He invariably arrives late.",
+    "exKor": "그는 변함없이 늦게 도착한다."
   },
   {
     "cat": "1. 수능 영단어",
@@ -33,6 +78,24 @@ const words = [
   {
     "cat": "1. 수능 영단어",
     "level": "상",
+    "word": "Preventive",
+    "mean": "예방의",
+    "pron": "프리벤티브",
+    "ex": "Take preventive measures.",
+    "exKor": "예방 조치를 취하세요."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Precedent",
+    "mean": "선례",
+    "pron": "프레시던트",
+    "ex": "There is no precedent for this.",
+    "exKor": "이것에 대한 선례가 없다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
     "word": "Subtle",
     "mean": "미묘한",
     "pron": "써틀",
@@ -42,11 +105,47 @@ const words = [
   {
     "cat": "1. 수능 영단어",
     "level": "상",
+    "word": "Saddle",
+    "mean": "안장",
+    "pron": "새들",
+    "ex": "He sat on the saddle.",
+    "exKor": "그는 안장 위에 앉았다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Shuttle",
+    "mean": "셔틀",
+    "pron": "셔틀",
+    "ex": "Take the shuttle bus.",
+    "exKor": "셔틀버스를 타세요."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
     "word": "Vulnerable",
     "mean": "취약한",
     "pron": "벌너러블",
     "ex": "We are vulnerable to cold.",
     "exKor": "우리는 추위에 취약하다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Valuable",
+    "mean": "가치 있는",
+    "pron": "밸류어블",
+    "ex": "This is a valuable ring.",
+    "exKor": "이것은 가치 있는 반지다."
+  },
+  {
+    "cat": "1. 수능 영단어",
+    "level": "상",
+    "word": "Voluntary",
+    "mean": "자발적인",
+    "pron": "발런터리",
+    "ex": "Participation is voluntary.",
+    "exKor": "참여는 자발적이다."
   },
   {
     "cat": "1. 수능 영단어",

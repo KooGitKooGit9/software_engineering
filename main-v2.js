@@ -640,6 +640,7 @@ let currentSentenceObj = null;
 let currentSentenceWords = [];
 let sentencePoolWords = [];
 let sentenceSelectedWords = [];
+let dbWordsPool = [];
 
 async function startSentenceBuilder() {
     if (!_supabase) {
@@ -649,6 +650,14 @@ async function startSentenceBuilder() {
     
     document.body.style.cursor = 'wait';
     try {
+        // Fetch all database words for decoys
+        const { data: allDbWords } = await _supabase.from('words').select('word');
+        let localWords = [];
+        if (typeof KONGLISH_WORDS !== 'undefined') {
+            localWords = KONGLISH_WORDS.map(k => k.word);
+        }
+        dbWordsPool = [...new Set([...(allDbWords || []).map(w => w.word), ...localWords])];
+
         // 1. Fetch mastered words from correct_history
         const { data: masteredData, error: mErr } = await _supabase
             .from('correct_history')
@@ -786,11 +795,45 @@ function loadNextSentence() {
     const decoys = ["He", "She", "I", "are", "is", "am", "in", "on", "bus", "the", "we", "take", "make", "that", "you", "go", "for", "with", "have", "they", "to", "at", "my", "your"];
     let selectedDecoys = [];
     let shuffledDecoys = shuffle([...decoys]);
+    
+    // 1. General decoys (4 of them)
     for (let i = 0; i < shuffledDecoys.length; i++) {
         const d = shuffledDecoys[i];
         if (!currentSentenceWords.some(w => w.toLowerCase() === d.toLowerCase())) {
             selectedDecoys.push(d);
             if (selectedDecoys.length >= 4) break;
+        }
+    }
+    
+    // 2. Similar-length decoys from database (3 of them)
+    const keyWord = currentSentenceObj.word || "";
+    const keyLen = keyWord.length;
+    let similarCandidates = [];
+    
+    if (typeof dbWordsPool !== 'undefined' && dbWordsPool.length > 0) {
+        similarCandidates = dbWordsPool.filter(w => {
+            const lowerW = w.toLowerCase();
+            const inSentence = currentSentenceWords.some(sw => sw.toLowerCase() === lowerW);
+            const inDecoys = selectedDecoys.some(sd => sd.toLowerCase() === lowerW);
+            return lowerW !== keyWord.toLowerCase() && !inSentence && !inDecoys;
+        });
+    }
+    
+    if (similarCandidates.length > 0) {
+        similarCandidates.sort((a, b) => Math.abs(a.length - keyLen) - Math.abs(b.length - keyLen));
+        const addedDecoys = similarCandidates.slice(0, 3);
+        selectedDecoys = [...selectedDecoys, ...addedDecoys];
+    } else {
+        // Fallback: 3 more general decoys
+        for (let i = 0; i < shuffledDecoys.length; i++) {
+            const d = shuffledDecoys[i];
+            const lowerD = d.toLowerCase();
+            const inSentence = currentSentenceWords.some(sw => sw.toLowerCase() === lowerD);
+            const inDecoys = selectedDecoys.some(sd => sd.toLowerCase() === lowerD);
+            if (!inSentence && !inDecoys) {
+                selectedDecoys.push(d);
+                if (selectedDecoys.length >= 7) break;
+            }
         }
     }
     
@@ -816,7 +859,7 @@ function renderSentenceBuilder() {
     // Slots
     if (sentenceSelectedWords.length === 0) {
         slotsEl.classList.remove('active');
-        slotsEl.innerHTML = `<span style="color: var(--text-color-muted, #718096); width: 100%; text-align: center; font-size: 0.9rem; font-weight: 600;">아래 낱말 카드를 터치하여 문장을 완성해 보세요!</span>`;
+        slotsEl.innerHTML = `<span style="color: var(--text-color-muted, #718096); width: 100%; text-align: center; font-size: 0.9rem; font-weight: 600;">낱말 카드를 터치하여 문장을 완성해 보세요!</span>`;
     } else {
         slotsEl.classList.add('active');
         sentenceSelectedWords.forEach((sel, index) => {
@@ -871,9 +914,43 @@ function clearSentenceSlots() {
     renderSentenceBuilder();
 }
 
+function showCustomPopup(message, type = 'info') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    // 이전에 떠 있던 팝업들 즉시 제거
+    container.innerHTML = '';
+    
+    const toast = document.createElement('div');
+    toast.className = `custom-toast ${type}`;
+    toast.innerText = message;
+    
+    container.appendChild(toast);
+    
+    void toast.offsetWidth;
+    
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.addEventListener('transitionend', () => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        });
+    }, 2500);
+}
+
+function showSentenceHint() {
+    if (!currentSentenceObj) return;
+    showCustomPopup(`💡 문장 힌트:\n${currentSentenceObj.ex}`, 'info');
+}
+
 async function submitSentence() {
     if (sentenceSelectedWords.length === 0) {
-        alert('낱말 카드를 탭하여 문장을 먼저 구성해 주세요!');
+        showCustomPopup('낱말 카드를 탭하여 문장을 먼저 구성해 주세요!', 'error');
         return;
     }
     
@@ -899,13 +976,13 @@ async function submitSentence() {
         renderDashboardUI(currentGlobalXP);
         showXPAnimation();
         
-        alert('🎉 완벽합니다! 정답입니다. (+2 XP 획득)');
+        showCustomPopup('🎉 완벽합니다! 정답입니다. (+2 XP 획득)', 'success');
         
         currentSentenceIdx++;
         loadNextSentence();
     } else {
         triggerFeedback('danger');
-        alert(`❌ 틀렸습니다! 다시 한 번 생각해보세요.\n\n[올바른 순서 힌트]: "${currentSentenceObj.ex}"`);
+        showCustomPopup(`❌ 틀렸습니다! 다시 한 번 생각해보세요.\n\n[올바른 순서 힌트]: "${currentSentenceObj.ex}"`, 'error');
     }
 }
 
