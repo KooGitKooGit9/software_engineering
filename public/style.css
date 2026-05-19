@@ -1158,61 +1158,65 @@ button {
     display: flex;
     align-items: center;
     gap: 18px;
-    padding: 22px 26px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.15);
-    border-radius: 24px;
+    padding: 20px 24px;
+    background: #ffffff;
+    border: 1px solid rgba(22, 101, 52, 0.08);
+    border-radius: 28px;
     margin-top: 36px;
     margin-bottom: 12px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .sentence-builder-cta:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px 0 rgba(168, 85, 247, 0.15);
-    border-color: rgba(168, 85, 247, 0.4);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.12) 100%);
+    box-shadow: 0 16px 32px rgba(16, 38, 26, 0.08);
+    border-color: rgba(22, 163, 74, 0.3);
 }
 
 .sentence-builder-cta .cta-emoji {
-    font-size: 2.2rem;
-    filter: drop-shadow(0 4px 8px rgba(168, 85, 247, 0.2));
+    width: 50px;
+    height: 50px;
+    border-radius: 18px;
+    background: rgba(22, 163, 74, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
     transition: transform 0.3s ease;
 }
 
 .sentence-builder-cta:hover .cta-emoji {
-    transform: scale(1.15) rotate(8deg);
+    transform: scale(1.1) rotate(5deg);
 }
 
 .sentence-builder-cta .cta-info {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
     flex-grow: 1;
     text-align: left;
 }
 
 .sentence-builder-cta .cta-title {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 800;
-    color: var(--text-color, #1a202c);
-    letter-spacing: -0.02em;
+    color: var(--text-main);
 }
 
 .sentence-builder-cta .cta-desc {
     font-size: 0.85rem;
-    color: var(--text-color-muted, #718096);
-    line-height: 1.45;
+    color: var(--text-soft);
+    font-weight: 600;
+    line-height: 1.4;
 }
 
 .sentence-builder-cta .cta-arrow {
-    font-size: 1.3rem;
-    color: #a855f7;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.2rem;
+    color: var(--primary-dark);
+    font-weight: 800;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sentence-builder-cta:hover .cta-arrow {
