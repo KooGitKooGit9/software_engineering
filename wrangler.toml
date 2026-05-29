@@ -1,8 +1,11 @@
 name = "software-engineering"
 compatibility_date = "2026-05-15"
 
+[build]
+command = "npm run build"
+
 [assets]
-directory = "./public"
+directory = "./dist"
 
 [observability]
 enabled = true

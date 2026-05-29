@@ -4,5 +4,4 @@ node_modules
 .idx
 .vscode
 package-lock.json
-dist
 .DS_Store
