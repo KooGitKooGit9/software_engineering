@@ -1,3 +1,7 @@
+#root {
+    display: contents;
+}
+
 :root {
     --primary: #86efac;
     --primary-dark: #166534;
