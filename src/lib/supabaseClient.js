@@ -4,7 +4,7 @@ const DEFAULT_SUPABASE_URL =
   'https://uzzsfpnpqywstyumvigh.supabase.co';
 
 const DEFAULT_SUPABASE_ANON_KEY =
-  '여기에 Cursor가 넣어준 전체 키';
+  'sb_publishable_CtEf-6qhdSYAnBiXJDixXA_Rp1FCHcx';
 
 const SUPABASE_URL =
   import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
