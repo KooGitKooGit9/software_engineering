@@ -6,6 +6,7 @@ import LevelView from './components/views/LevelView';
 import StudyView from './components/views/StudyView';
 import ResultView from './components/views/ResultView';
 import SentenceView from './components/views/SentenceView';
+import DevFeedback from './components/DevFeedback';
 import { supabase } from './lib/supabaseClient';
 import { KONGLISH_WORDS } from './data/konglish';
 
@@ -581,6 +582,8 @@ export default function App() {
       
       {/* Toast Container for popups */}
       <div id="toast-container" ref={toastContainerRef}></div>
+
+      <DevFeedback currentView={currentView} onNotify={showCustomPopup} />
     </>
   );
 }

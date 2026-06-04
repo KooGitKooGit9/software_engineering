@@ -1826,3 +1826,106 @@ button {
 .custom-toast.info {
     border-bottom: 4px solid #3b82f6;
 }
+
+/* Developer feedback — bottom-right button */
+.dev-feedback-trigger {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    z-index: 900;
+    margin: 0;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #b91c1c;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #ef4444;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25), 0 2px 6px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.dev-feedback-trigger:hover,
+.dev-feedback-trigger:focus-visible {
+    color: #991b1b;
+    background: #fff;
+    border-color: #dc2626;
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35), 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.dev-feedback-overlay {
+    z-index: 1100;
+}
+
+.dev-feedback-modal {
+    max-width: 420px;
+    padding: 28px 28px 24px;
+}
+
+.dev-feedback-textarea {
+    width: 100%;
+    min-height: 120px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #10261a;
+    resize: vertical;
+    border: 1px solid rgba(134, 239, 172, 0.55);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    box-sizing: border-box;
+}
+
+.dev-feedback-textarea:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.dev-feedback-textarea::placeholder {
+    color: #9ca3af;
+}
+
+.dev-feedback-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.dev-feedback-btn {
+    padding: 10px 16px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.dev-feedback-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dev-feedback-btn.secondary {
+    color: #4b6354;
+    background: rgba(16, 38, 26, 0.06);
+}
+
+.dev-feedback-btn.primary {
+    color: #fff;
+    background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+}
+
+.dev-feedback-btn.primary:not(:disabled):hover {
+    transform: translateY(-1px);
+}
