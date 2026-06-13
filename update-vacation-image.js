@@ -1,23 +1,32 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-async function updateVacationImage() {
-    console.log('Updating Vacation image_url...');
-    
-    // Vacation 단어의 image_url을 images/vacation.jpg로 업데이트
-    const { data, error } = await supabase
-        .from('words')
-        .update({ image_url: 'images/vacation.jpg' })
-        .eq('word', 'Vacation')
-        .select();
+const WORD_IMAGES = [
+    { word: 'Vacation', image_url: 'images/vacation.jpg' },
+    { word: 'Alternative', image_url: 'images/alternative.jpg' },
+    { word: 'Hurry', image_url: 'images/hurry.png' },
+];
 
-    if (error) {
-        console.error('Error updating DB:', error);
-    } else {
-        console.log('Successfully updated!', data);
+async function updateWordImages() {
+    for (const { word, image_url } of WORD_IMAGES) {
+        console.log(`Updating ${word} image_url...`);
+
+        const { data, error } = await supabase
+            .from('words')
+            .update({ image_url })
+            .eq('word', word)
+            .select();
+
+        if (error) {
+            console.error(`Error updating ${word}:`, error);
+        } else {
+            console.log(`Successfully updated ${word}!`, data);
+        }
     }
 }
 
-updateVacationImage();
+updateWordImages();

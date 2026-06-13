@@ -5,6 +5,7 @@ export default function SentenceView({
   selectedWords,
   poolWords,
   onClearSlots,
+  onShowAnswer,
   onShowHint,
   onSubmit,
   onSelectWord,
@@ -30,7 +31,10 @@ export default function SentenceView({
           <div className="sentence-slots-container">
             <div className="slots-header">
               <span>조립된 문장</span>
-              <button className="btn-clear-slots" onClick={onClearSlots}>전체 취소 ↺</button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="btn-show-answer" onClick={onShowAnswer}>정답 보기 🔑</button>
+                <button className="btn-clear-slots" onClick={onClearSlots}>전체 취소 ↺</button>
+              </div>
             </div>
             <div id="sentence-slots" className="sentence-slots">
               {selectedWords.map((wordObj, idx) => (

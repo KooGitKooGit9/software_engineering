@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { buildImageUrl, getImageFallbacks } from '../../lib/imageUrl';
 
 export default function StudyView({ 
   currentList, 
@@ -10,6 +11,10 @@ export default function StudyView({
 }) {
   const [flipped, setFlipped] = useState(false);
   const [showKonglish, setShowKonglish] = useState(false);
+  const [imageSrc, setImageSrc] = useState('');
+  const [showImage, setShowImage] = useState(false);
+  const [imageFallbacks, setImageFallbacks] = useState([]);
+  const [fallbackIdx, setFallbackIdx] = useState(0);
 
   const cur = currentList[idx];
 
@@ -17,7 +22,18 @@ export default function StudyView({
   useEffect(() => {
     setFlipped(false);
     setShowKonglish(false);
-  }, [idx]);
+    setFallbackIdx(0);
+    if (cur?.imageUrl) {
+      const fallbacks = getImageFallbacks(cur.imageKey || cur.word, cur.imageUrl);
+      setImageFallbacks(fallbacks);
+      setImageSrc(buildImageUrl(cur.imageUrl));
+      setShowImage(true);
+    } else {
+      setImageFallbacks([]);
+      setImageSrc('');
+      setShowImage(false);
+    }
+  }, [idx, cur?.imageUrl, cur?.imageKey, cur?.word]);
 
   if (!cur) return null;
 
@@ -36,6 +52,16 @@ export default function StudyView({
     const ut = new SpeechSynthesisUtterance(text);
     ut.lang = 'en-US';
     window.speechSynthesis.speak(ut);
+  };
+
+  const handleImageError = () => {
+    if (fallbackIdx < imageFallbacks.length) {
+      const nextPath = imageFallbacks[fallbackIdx];
+      setFallbackIdx(prev => prev + 1);
+      setImageSrc(buildImageUrl(nextPath));
+      return;
+    }
+    setShowImage(false);
   };
 
   return (
@@ -60,9 +86,17 @@ export default function StudyView({
                 <div id="a-pron" className="pron-text">[{cur.pron}]</div>
                 <div id="a-meaning" className="meaning-text">{cur.mean}</div>
                 
-                <div className="card-image-container" id="card-image-container" style={{ display: cur.imageUrl ? 'flex' : 'none' }}>
-                  <img id="card-image" src={cur.imageUrl || ''} alt="Flashcard Image" />
-                </div>
+                {showImage && (
+                  <div className="card-image-container" id="card-image-container">
+                    <img
+                      key={imageSrc}
+                      id="card-image"
+                      src={imageSrc}
+                      alt="Flashcard Image"
+                      onError={handleImageError}
+                    />
+                  </div>
+                )}
                 
                 <div className="example-box">
                   <div className="example-line">
@@ -91,8 +125,8 @@ export default function StudyView({
           </div>
 
           <div className="action-group">
-            <button className="btn-wrong" onClick={() => onAnswer(false)}>❌ 틀렸어요</button>
-            <button className="btn-correct" onClick={() => onAnswer(true)}>✅ 맞았어요</button>
+            <button className="btn-wrong" onClick={() => { setFlipped(false); onAnswer(false); }}>❌ 틀렸어요</button>
+            <button className="btn-correct" onClick={() => { setFlipped(false); onAnswer(true); }}>✅ 맞았어요</button>
           </div>
 
           <div className="stats-bar">

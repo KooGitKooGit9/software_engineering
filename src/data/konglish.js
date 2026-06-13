@@ -69,6 +69,7 @@ export const KONGLISH_WORDS = [
         exKor: '넌 할 수 있어!',
         isKonglish: true,
         konglishCorrect: 'You can do it!',
+        image_url: 'images/you can do it.jpg',
         konglishMessage: 'fighting은 영어권에서 응원 구호로 잘 쓰이지 않아요.'
     },
     {
@@ -141,6 +142,7 @@ export const KONGLISH_WORDS = [
         exKor: '그들은 커플룩을 입었어요.',
         isKonglish: true,
         konglishCorrect: 'matching outfits',
+        image_url: 'images/matching outfit.jpg',
         konglishMessage: 'couple look보다 matching outfits가 더 자연스럽게 들려요.'
     },
     {
@@ -165,6 +167,7 @@ export const KONGLISH_WORDS = [
         exKor: '이 제품은 A/S가 포함되나요?',
         isKonglish: true,
         konglishCorrect: 'after-sales service',
+        image_url: 'images/repair service.jpg',
         konglishMessage: 'A/S라는 줄임말은 영어권에서 바로 통하지 않을 수 있어요.'
     },
     {
@@ -201,6 +204,7 @@ export const KONGLISH_WORDS = [
         exKor: '나는 방과 후에 아르바이트를 해요.',
         isKonglish: true,
         konglishCorrect: 'part-time job',
+        image_url: 'images/part time job.jpg',
         konglishMessage: 'part-time만으로는 형용사라 job을 붙여 말하는 편이 자연스러워요.'
     },
     {

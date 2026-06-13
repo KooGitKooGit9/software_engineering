@@ -8,6 +8,7 @@ import ResultView from './components/views/ResultView';
 import SentenceView from './components/views/SentenceView';
 import DevFeedback from './components/DevFeedback';
 import { supabase } from './lib/supabaseClient';
+import { resolveImagePath } from './lib/imageUrl';
 import { KONGLISH_WORDS } from './data/konglish';
 
 function shuffle(array) {
@@ -172,7 +173,15 @@ export default function App() {
       .filter(item => (level === '전체' || item.level === level))
       .filter(item => !masteredSet.has(item.word))
       .filter(item => !existingSet.has(item.word.toLowerCase()))
-      .map(item => ({ ...item }));
+      .map(item => {
+        const imageKey = item.konglishCorrect || item.word;
+        const imageUrl = resolveImagePath(imageKey, item.image_url);
+        return {
+          ...item,
+          imageKey,
+          ...(imageUrl ? { imageUrl } : {}),
+        };
+      });
   };
 
   const handleStartStudy = async (lv) => {
@@ -191,10 +200,15 @@ export default function App() {
       if (wErr) throw wErr;
 
       const filtered = (allWords || []).filter(w => !masteredSet.has(w.word));
-      const regularWords = filtered.map(w => ({
-        cat: w.category, level: w.level, word: w.word, mean: w.meaning,
-        pron: w.pronunciation, ex: w.example, exKor: w.example_kor, imageUrl: w.image_url
-      }));
+      const regularWords = filtered.map(w => {
+        const imageUrl = resolveImagePath(w.word, w.image_url);
+        return {
+          cat: w.category, level: w.level, word: w.word, mean: w.meaning,
+          pron: w.pronunciation, ex: w.example, exKor: w.example_kor,
+          imageKey: w.word,
+          ...(imageUrl ? { imageUrl } : {}),
+        };
+      });
 
       const konglishWords = getKonglishWordsFor(lv, masteredSet, regularWords);
       if (regularWords.length + konglishWords.length === 0) {
@@ -248,11 +262,16 @@ export default function App() {
         return;
       }
 
-      const mapped = reviewWords.map(w => ({
-        cat: w.category, level: w.level, word: w.word, mean: w.meaning,
-        pron: w.pronunciation, ex: w.example, exKor: w.example_kor, imageUrl: w.image_url,
-        wrongCount: wrongCountByWord.get(w.word)
-      }));
+      const mapped = reviewWords.map(w => {
+        const imageUrl = resolveImagePath(w.word, w.image_url);
+        return {
+          cat: w.category, level: w.level, word: w.word, mean: w.meaning,
+          pron: w.pronunciation, ex: w.example, exKor: w.example_kor,
+          imageKey: w.word,
+          wrongCount: wrongCountByWord.get(w.word),
+          ...(imageUrl ? { imageUrl } : {}),
+        };
+      });
 
       setCurrentList(mapped);
       setStudyIdx(0); setCountC(0); setCountW(0); setWrongList([]);
@@ -346,12 +365,21 @@ export default function App() {
       ...sentenceWords.map(w => ({ word: w, isDecoy: false })),
       ...selectedDecoys.map(w => ({ word: w, isDecoy: true }))
     ];
+    
+    // Simplistic handling of over-long pool (reducing decoys if too many words)
+    const MAX_POOL_SIZE = 10;
+    if (combined.length > MAX_POOL_SIZE) {
+      const allowedDecoysCount = Math.max(1, MAX_POOL_SIZE - sentenceWords.length);
+      selectedDecoys = selectedDecoys.slice(0, allowedDecoysCount);
+      combined = [
+        ...sentenceWords.map(w => ({ word: w, isDecoy: false })),
+        ...selectedDecoys.map(w => ({ word: w, isDecoy: true }))
+      ];
+    }
+    
     let pool = combined.map((item, index) => ({
       word: item.word, isDecoy: item.isDecoy, id: index, used: false, hinted: false
     }));
-    
-    // Simplistic handling of over-long pool (reducing decoys if too many words)
-    // Actually, handling visually via CSS wrap is better in React.
     
     setPoolWords(shuffle(pool));
     setSelectedWords([]);
@@ -478,6 +506,11 @@ export default function App() {
     showCustomPopup(`💡 힌트: ${currentSentenceObj.word}`, 'info');
   };
 
+  const handleShowAnswer = () => {
+    if (!currentSentenceObj) return;
+    showCustomPopup(`🔑 정답: ${currentSentenceObj.ex}`, 'info');
+  };
+
   const handleSubmitSentence = async () => {
     if (selectedWords.length === 0) {
       showCustomPopup('낱말 카드를 탭하여 문장을 먼저 구성해 주세요!', 'error');
@@ -567,6 +600,7 @@ export default function App() {
               selectedWords={selectedWords}
               poolWords={poolWords}
               onClearSlots={handleClearSlots}
+              onShowAnswer={handleShowAnswer}
               onShowHint={handleShowHint}
               onSubmit={handleSubmitSentence}
               onSelectWord={handleSelectWord}
