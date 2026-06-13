@@ -18,8 +18,11 @@ export default function StudyView({
 
   const cur = currentList[idx];
 
-  // Reset states when the index changes
-  useEffect(() => {
+  const [prevIdx, setPrevIdx] = useState(-1);
+
+  // Synchronously reset states when the index changes to prevent render lag (flash of missing container)
+  if (idx !== prevIdx) {
+    setPrevIdx(idx);
     setFlipped(false);
     setShowKonglish(false);
     setFallbackIdx(0);
@@ -33,7 +36,7 @@ export default function StudyView({
       setImageSrc('');
       setShowImage(false);
     }
-  }, [idx, cur?.imageUrl, cur?.imageKey, cur?.word]);
+  }
 
   if (!cur) return null;
 
