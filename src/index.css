@@ -875,6 +875,7 @@ button {
     text-align: center;
     border-radius: 12px;
     overflow: hidden;
+    min-height: 200px;
     max-height: 200px;
     flex-shrink: 0;
     display: flex;
